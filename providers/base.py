@@ -6,7 +6,6 @@ returning structured GenerationResult objects instead of raw strings.
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from models.common import GenerationResult
 
@@ -15,7 +14,7 @@ class AIProvider(ABC):
     """Abstract interface for AI text generation providers."""
 
     @abstractmethod
-    def generate(self, prompt: str, max_tokens: Optional[int] = None) -> GenerationResult:
+    def generate(self, prompt: str, max_tokens: int | None = None) -> GenerationResult:
         """
         Send a prompt to the AI model and return a structured result.
 

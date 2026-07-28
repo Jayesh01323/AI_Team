@@ -1,0 +1,24 @@
+{
+  "project_name": "checkpoint-test",
+  "raw_idea": "test",
+  "created_at": "2026-07-28T15:30:45.301789Z",
+  "idea": {
+    "title": "Test",
+    "summary": "Test",
+    "target_users": [],
+    "functional_requirements": [],
+    "non_functional_requirements": [],
+    "assumptions": [],
+    "constraints": [],
+    "risks": [],
+    "unknowns": [],
+    "clarification_questions": [],
+    "raw_idea": "test"
+  },
+  "requirements": null,
+  "prd": null,
+  "project_specification": null,
+  "architecture": null,
+  "task_plan": null,
+  "metadata": {}
+}

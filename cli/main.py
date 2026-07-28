@@ -6,12 +6,15 @@ Usage:
     ai-team init "<project idea>"
     ai-team test-provider
     ai-team analyze "<project idea>"
+    ai-team generate "<project idea>"
+    ai-team pipeline "<project idea>"
 """
 
 import json
-import click
-from pathlib import Path
 import re
+from pathlib import Path
+
+import click
 
 from core.config import PROJECTS_DIR
 from core.logging import get_logger
@@ -38,7 +41,6 @@ def create_placeholder_file(filepath: Path, content: str) -> None:
 @click.group()
 def cli():
     """Autonomous AI Engineering Team - Transform ideas into software projects."""
-    pass
 
 
 @cli.command()
@@ -51,19 +53,19 @@ def init(idea: str):
     documents: requirements.md, prd.md, architecture.md, tech-stack.json.
     """
     click.echo("")
-    click.echo("=== Initializing project from idea: \"%s\" ===" % idea)
+    click.echo(f'=== Initializing project from idea: "{idea}" ===')
     click.echo("")
 
     project_name = sanitize_project_name(idea)
     project_dir = PROJECTS_DIR / project_name
 
     if project_dir.exists():
-        click.echo("ERROR: Project directory already exists: projects/%s/" % project_name)
+        click.echo(f"ERROR: Project directory already exists: projects/{project_name}/")
         raise SystemExit(1)
 
     project_dir.mkdir(parents=True, exist_ok=True)
 
-    click.echo("Project folder: projects/%s/" % project_name)
+    click.echo(f"Project folder: projects/{project_name}/")
     click.echo("")
     click.echo("Creating placeholder files...")
     click.echo("")
@@ -165,11 +167,13 @@ Generated from idea: "{idea}"
     create_placeholder_file(project_dir / "tech-stack.json", tech_stack_json)
 
     click.echo("")
-    click.echo("Project initialized: projects/%s/" % project_name)
+    click.echo(f"Project initialized: projects/{project_name}/")
     click.echo("")
     click.echo("Next steps:")
     click.echo("  Brain modules will populate these files with real content.")
-    click.echo("  See: brain/idea/, brain/requirements/, brain/prd/, brain/architecture/, brain/techstack/")
+    click.echo(
+        "  See: brain/idea/, brain/requirements/, brain/prd/, brain/architecture/, brain/techstack/"
+    )
 
 
 @cli.command()
@@ -188,19 +192,19 @@ def test_provider():
 
     try:
         result = run_test()
-        click.echo("Provider:     %s" % result.provider_name)
-        click.echo("Model:        %s" % result.model)
-        click.echo("Response:     %s" % result.text)
-        click.echo("Finish:       %s" % result.finish_reason)
-        click.echo("Input tokens: %s" % result.input_tokens)
-        click.echo("Output tokens:%s" % result.output_tokens)
+        click.echo(f"Provider:     {result.provider_name}")
+        click.echo(f"Model:        {result.model}")
+        click.echo(f"Response:     {result.text}")
+        click.echo(f"Finish:       {result.finish_reason}")
+        click.echo(f"Input tokens: {result.input_tokens}")
+        click.echo(f"Output tokens:{result.output_tokens}")
         click.echo("")
         click.echo("SUCCESS: Provider is working correctly.")
     except Exception as exc:
-        click.echo("ERROR: %s" % str(exc))
+        click.echo(f"ERROR: {exc!s}")
         click.echo("")
         click.echo("FAILED: Provider test did not pass.")
-        raise SystemExit(1)
+        raise SystemExit(1) from exc
 
 
 @cli.command()
@@ -217,7 +221,7 @@ def analyze(idea: str):
     click.echo("")
     click.echo("=== Analyzing Idea ===")
     click.echo("")
-    click.echo("Idea: \"%s\"" % idea)
+    click.echo(f'Idea: "{idea}"')
     click.echo("")
 
     try:
@@ -226,10 +230,86 @@ def analyze(idea: str):
         click.echo("")
         click.echo("SUCCESS: Idea analysis complete.")
     except Exception as exc:
-        click.echo("ERROR: %s" % str(exc))
+        click.echo(f"ERROR: {exc!s}")
         click.echo("")
         click.echo("FAILED: Idea analysis did not complete.")
-        raise SystemExit(1)
+        raise SystemExit(1) from exc
+
+
+@cli.command()
+@click.argument("idea")
+def generate(idea: str):
+    """
+    Analyze an idea and generate structured requirements.
+
+    Runs Idea Analysis -> Requirements Generation.
+    Writes requirements.md to the project folder.
+    """
+    from app.brain_service import analyze_and_generate_requirements as run_pipeline
+
+    click.echo("")
+    click.echo("=== Generating Requirements from Idea ===")
+    click.echo("")
+    click.echo(f'Idea: "{idea}"')
+    click.echo("")
+
+    try:
+        context = run_pipeline(idea)
+        click.echo(json.dumps(context.to_dict(), indent=2))
+        click.echo("")
+        click.echo("SUCCESS: Requirements generated.")
+        click.echo(f"  Project folder: projects/{context.project_name}/")
+    except Exception as exc:
+        click.echo(f"ERROR: {exc!s}")
+        click.echo("")
+        click.echo("FAILED: Requirements generation did not complete.")
+        raise SystemExit(1) from exc
+
+
+@cli.command()
+@click.argument("idea")
+def pipeline(idea: str):
+    """
+    Run the full Engineering Brain pipeline.
+
+    Stages:
+        1. Idea Analysis
+        2. Requirements Generation
+        3. PRD Generation
+        4. ProjectSpecification Generation
+        5. Architecture Generation
+        6. Task Planning
+
+    Produces requirements.md, PRD.md, prd.json, project_specification.json, architecture.json, ARCHITECTURE.md, task_plan.json, and TASKS.md on disk.
+    """
+    from app.brain_service import run_full_pipeline as run_all
+
+    click.echo("")
+    click.echo("=== Running Full Engineering Pipeline ===")
+    click.echo("")
+    click.echo(f'Idea: "{idea}"')
+    click.echo("")
+
+    try:
+        context = run_all(idea)
+        click.echo(json.dumps(context.to_dict(), indent=2))
+        click.echo("")
+        click.echo("SUCCESS: Full pipeline complete.")
+        click.echo(f"  Project folder: projects/{context.project_name}/")
+        click.echo("  Artifacts:")
+        click.echo("    - requirements.md")
+        click.echo("    - PRD.md")
+        click.echo("    - prd.json")
+        click.echo("    - project_specification.json")
+        click.echo("    - architecture.json")
+        click.echo("    - ARCHITECTURE.md")
+        click.echo("    - task_plan.json")
+        click.echo("    - TASKS.md")
+    except Exception as exc:
+        click.echo(f"ERROR: {exc!s}")
+        click.echo("")
+        click.echo("FAILED: Pipeline did not complete.")
+        raise SystemExit(1) from exc
 
 
 if __name__ == "__main__":

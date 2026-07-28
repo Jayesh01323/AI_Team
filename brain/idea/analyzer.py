@@ -7,7 +7,7 @@ to handle common LLM orchestration.
 
 import json
 import re
-from typing import Any, Dict
+from typing import Any
 
 from brain.stages.llm_stage import LLMStage
 from core.exceptions import ProviderError
@@ -31,7 +31,7 @@ class IdeaAnalyzerStage(LLMStage):
     def prompt_template_name(self) -> str:
         return "idea_analysis"
 
-    def get_prompt_kwargs(self, context: ProjectContext) -> Dict[str, Any]:
+    def get_prompt_kwargs(self, context: ProjectContext) -> dict[str, Any]:
         if not context.raw_idea:
             raise ValueError("No raw_idea in context")
         return {"idea_text": context.raw_idea}
@@ -39,7 +39,7 @@ class IdeaAnalyzerStage(LLMStage):
     def parse_response(self, response_text: str, context: ProjectContext) -> Idea:
         """Parse the JSON response into an Idea model."""
         data = self._extract_json(response_text)
-        
+
         # Populate Idea model
         title = data.get("title", "")
         if not title:
@@ -59,11 +59,13 @@ class IdeaAnalyzerStage(LLMStage):
             raw_idea=context.raw_idea,
         )
 
-    def update_context(self, context: ProjectContext, parsed_output: Idea) -> ProjectContext:
+    def update_context(
+        self, context: ProjectContext, parsed_output: Idea
+    ) -> ProjectContext:
         context.idea = parsed_output
         return context
 
-    def _extract_json(self, text: str) -> Dict[str, Any]:
+    def _extract_json(self, text: str) -> dict[str, Any]:
         """Extract JSON from response text, handling markdown fences."""
         text = text.strip()
         if text.startswith("```"):
@@ -90,7 +92,7 @@ class IdeaAnalyzerStage(LLMStage):
 def analyze_idea(idea_text: str) -> ProjectContext:
     """
     Convenience function to run idea analysis.
-    
+
     Creates context and executes the IdeaAnalyzerStage.
     """
     context = ProjectContext(raw_idea=idea_text)

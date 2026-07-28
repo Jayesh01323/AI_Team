@@ -1,0 +1,13 @@
+{
+  "project": "another-idea",
+  "idea": "another idea",
+  "tech_stack": {
+    "backend": null,
+    "frontend": null,
+    "database": null,
+    "language": null,
+    "framework": null
+  },
+  "dependencies": [],
+  "status": "placeholder"
+}

@@ -6,10 +6,14 @@ current context and writes its output back. The context grows as stages complete
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
+from models.architecture import Architecture
 from models.idea import Idea
+from models.prd import PRD
+from models.project_specification import ProjectSpecification
+from models.requirements import Requirements
+from models.task_plan import TaskPlan
 
 
 @dataclass
@@ -18,13 +22,13 @@ class StageMetadata:
 
     stage_name: str
     status: str = "pending"  # pending, running, completed, failed
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    provider_name: Optional[str] = None
-    model: Optional[str] = None
-    input_tokens: Optional[int] = None
-    output_tokens: Optional[int] = None
-    error: Optional[str] = None
+    started_at: str | None = None
+    completed_at: str | None = None
+    provider_name: str | None = None
+    model: str | None = None
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    error: str | None = None
 
 
 @dataclass
@@ -40,8 +44,13 @@ class ProjectContext:
     raw_idea: str = ""
 
     # Stage outputs (populated progressively)
-    idea: Optional[Idea] = None
-    # Future stages will add: requirements, prd, architecture, tech_stack, task_plan
+    idea: Idea | None = None
+    requirements: Requirements | None = None
+    prd: PRD | None = None
+    project_specification: ProjectSpecification | None = None
+    architecture: Architecture | None = None
+    task_plan: TaskPlan | None = None
+    # Future stages will add: tech_stack
 
     # Stage execution metadata
     metadata: dict[str, StageMetadata] = field(default_factory=dict)
@@ -52,9 +61,12 @@ class ProjectContext:
 
     def __post_init__(self) -> None:
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat() + "Z"
+            self.created_at = (
+                datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+            )
         if not self.project_name and self.raw_idea:
             import re
+
             name = self.raw_idea.lower().strip()
             name = re.sub(r"[^a-z0-9]+", "-", name)
             name = name.strip("-")
@@ -66,11 +78,13 @@ class ProjectContext:
             self.metadata[name] = StageMetadata(stage_name=name)
         return self.metadata[name]
 
-    def start_stage(self, name: str, provider_name: Optional[str] = None, model: Optional[str] = None) -> None:
+    def start_stage(
+        self, name: str, provider_name: str | None = None, model: str | None = None
+    ) -> None:
         """Mark a stage as running."""
         stage = self.get_stage(name)
         stage.status = "running"
-        stage.started_at = datetime.utcnow().isoformat() + "Z"
+        stage.started_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         if provider_name:
             stage.provider_name = provider_name
         if model:
@@ -79,13 +93,15 @@ class ProjectContext:
     def complete_stage(
         self,
         name: str,
-        input_tokens: Optional[int] = None,
-        output_tokens: Optional[int] = None,
+        input_tokens: int | None = None,
+        output_tokens: int | None = None,
     ) -> None:
         """Mark a stage as completed."""
         stage = self.get_stage(name)
         stage.status = "completed"
-        stage.completed_at = datetime.utcnow().isoformat() + "Z"
+        stage.completed_at = (
+            datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        )
         if input_tokens is not None:
             stage.input_tokens = input_tokens
         if output_tokens is not None:
@@ -95,7 +111,9 @@ class ProjectContext:
         """Mark a stage as failed."""
         stage = self.get_stage(name)
         stage.status = "failed"
-        stage.completed_at = datetime.utcnow().isoformat() + "Z"
+        stage.completed_at = (
+            datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        )
         stage.error = error
 
     def to_dict(self) -> dict:
@@ -105,6 +123,13 @@ class ProjectContext:
             "raw_idea": self.raw_idea,
             "created_at": self.created_at,
             "idea": self.idea.to_dict() if self.idea else None,
+            "requirements": self.requirements.to_dict() if self.requirements else None,
+            "prd": self.prd.to_dict() if self.prd else None,
+            "project_specification": self.project_specification.to_dict()
+            if self.project_specification
+            else None,
+            "architecture": self.architecture.to_dict() if self.architecture else None,
+            "task_plan": self.task_plan.to_dict() if self.task_plan else None,
             "metadata": {
                 name: {
                     "stage": m.stage_name,

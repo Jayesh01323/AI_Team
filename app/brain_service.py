@@ -1,36 +1,48 @@
-"""
-Application-layer service for Engineering Brain operations.
+"""Application-layer service for Engineering Brain operations.
 
 CLI commands call this service. The service calls brain stages.
 This keeps the CLI independent of brain implementation details.
 """
 
+import brain.stages  # Ensure stages are registered
 from core.logging import get_logger
 from models.project_context import ProjectContext
 from pipeline.engine import PipelineEngine
-from brain.idea.analyzer import IdeaAnalyzerStage
 
 logger = get_logger(__name__)
 
 
 def analyze_idea(idea_text: str) -> ProjectContext:
+    context = ProjectContext(raw_idea=idea_text)
+    engine = PipelineEngine.from_registry(["idea_analysis"])
+    logger.info("Brain service: running analysis pipeline")
+    return engine.run(context)
+
+
+def analyze_and_generate_requirements(idea_text: str) -> ProjectContext:
+    context = ProjectContext(raw_idea=idea_text)
+    engine = PipelineEngine.from_registry(["idea_analysis", "requirements_generation"])
+    logger.info("Brain service: running analysis + requirements pipeline")
+    return engine.run(context)
+
+
+def run_full_pipeline(idea_text: str) -> ProjectContext:
     """
-    Analyze a raw user idea through the Idea Analyzer stage.
+    Run the full Engineering Brain pipeline using the dynamic registry.
 
-    Args:
-        idea_text: The user's raw project idea.
+    Stages are executed in registration order:
+        1. Idea Analysis
+        2. Requirements Generation
+        3. PRD Generation
+        4. ProjectSpecification Generation
+        5. Architecture Generation
+        6. Task Planning
 
-    Returns:
-        A ProjectContext with the idea field populated.
-
-    Raises:
-        ConfigurationError: If the AI provider is not configured.
-        ProviderError: If analysis fails.
+    Produces requirements.md, PRD.md, prd.json, project_specification.json,
+    architecture.json, ARCHITECTURE.md, task_plan.json, TASKS.md, and
+    context.json (checkpoint) on disk.
     """
     context = ProjectContext(raw_idea=idea_text)
-    
-    # We could also use the registry here if we wanted to be more dynamic
-    engine = PipelineEngine(stages=[IdeaAnalyzerStage()])
-    
-    logger.info("Brain service: running analysis pipeline")
+    engine = PipelineEngine.from_registry()
+    logger.info("Brain service: running full pipeline from registry")
     return engine.run(context)

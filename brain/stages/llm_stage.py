@@ -6,7 +6,7 @@ metadata recording, error handling, and context updates.
 """
 
 from abc import abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
 
 from brain.prompts.loader import load_prompt
 from brain.stages.base import Stage
@@ -28,7 +28,7 @@ class LLMStage(Stage):
         ...
 
     @abstractmethod
-    def get_prompt_kwargs(self, context: ProjectContext) -> Dict[str, Any]:
+    def get_prompt_kwargs(self, context: ProjectContext) -> dict[str, Any]:
         """Return the keyword arguments for the prompt template."""
         ...
 
@@ -38,7 +38,9 @@ class LLMStage(Stage):
         ...
 
     @abstractmethod
-    def update_context(self, context: ProjectContext, parsed_output: Any) -> ProjectContext:
+    def update_context(
+        self, context: ProjectContext, parsed_output: Any
+    ) -> ProjectContext:
         """Update the ProjectContext with the parsed output."""
         ...
 
@@ -55,12 +57,12 @@ class LLMStage(Stage):
 
         # 2. Get provider
         provider = create_provider()
-        
+
         # 3. Start stage (metadata)
         context.start_stage(
-            self.name, 
-            provider_name=provider.name(), 
-            model=provider.name()  # Using name as model for now
+            self.name,
+            provider_name=provider.name(),
+            model=provider.name(),  # Using name as model for now
         )
 
         try:
@@ -78,11 +80,11 @@ class LLMStage(Stage):
             context.complete_stage(
                 self.name,
                 input_tokens=result.input_tokens,
-                output_tokens=result.output_tokens
+                output_tokens=result.output_tokens,
             )
             return context
 
         except Exception as e:
-            logger.error(f"LLMStage '{self.name}' failed: {str(e)}")
+            logger.error(f"LLMStage '{self.name}' failed: {e!s}")
             context.fail_stage(self.name, str(e))
-            raise ProviderError(f"Stage '{self.name}' failed: {str(e)}") from e
+            raise ProviderError(f"Stage '{self.name}' failed: {e!s}") from e

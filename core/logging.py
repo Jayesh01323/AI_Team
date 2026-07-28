@@ -10,7 +10,7 @@ All modules should use::
 import logging
 import sys
 
-from core.config import LOG_LEVEL, LOG_FORMAT
+from core.config import LOG_FORMAT, LOG_LEVEL
 
 
 def get_logger(name: str) -> logging.Logger:

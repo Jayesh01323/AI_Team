@@ -6,7 +6,6 @@ The Idea Analyzer produces this model from raw user input.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 
 @dataclass(frozen=True)

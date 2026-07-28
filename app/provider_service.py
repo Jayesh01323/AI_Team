@@ -37,13 +37,11 @@ def test_provider() -> GenerationResult:
     logger.info("Testing provider: %s", provider.name())
 
     try:
-        result = provider.generate(
-            "Reply with exactly: OK. Do not add anything else."
-        )
+        result = provider.generate("Reply with exactly: OK. Do not add anything else.")
     except ProviderError:
         raise
     except Exception as exc:
-        raise ProviderError(f"Unexpected error testing provider: {exc}")
+        raise ProviderError(f"Unexpected error testing provider: {exc}") from exc
 
     logger.info("Provider test succeeded: %s", result.text)
     return result

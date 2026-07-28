@@ -6,7 +6,6 @@ Templates use Python str.format() syntax for placeholders.
 """
 
 from pathlib import Path
-from typing import Optional
 
 from core.logging import get_logger
 
@@ -32,9 +31,7 @@ def load_prompt(name: str, **kwargs) -> str:
     filepath = PROMPTS_DIR / f"{name}.md"
 
     if not filepath.exists():
-        raise FileNotFoundError(
-            f"Prompt template not found: {filepath}"
-        )
+        raise FileNotFoundError(f"Prompt template not found: {filepath}")
 
     template = filepath.read_text(encoding="utf-8")
 
@@ -46,7 +43,4 @@ def load_prompt(name: str, **kwargs) -> str:
 
 def list_prompts() -> list[str]:
     """Return a list of available prompt template names."""
-    return [
-        f.stem
-        for f in PROMPTS_DIR.glob("*.md")
-    ]
+    return [f.stem for f in PROMPTS_DIR.glob("*.md")]

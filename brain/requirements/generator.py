@@ -1,0 +1,112 @@
+"""
+Requirements Generator Stage — converts an analyzed Idea into a structured Requirements model.
+
+This is the second Engineering Brain stage. It inherits from LLMStage
+and produces both a domain model and a Markdown file.
+"""
+
+import json
+import re
+from typing import Any
+
+from brain.stages.llm_stage import LLMStage
+from core.exceptions import ProviderError
+from core.logging import get_logger
+from models.project_context import ProjectContext
+from models.requirements import Requirements
+from pipeline.artifacts import ArtifactManager
+from pipeline.registry import register_stage
+
+logger = get_logger(__name__)
+
+
+@register_stage
+class RequirementsGeneratorStage(LLMStage):
+    """Stage that generates structured requirements from an analyzed idea."""
+
+    @property
+    def name(self) -> str:
+        return "requirements_generation"
+
+    @property
+    def prompt_template_name(self) -> str:
+        return "requirements"
+
+    def get_prompt_kwargs(self, context: ProjectContext) -> dict[str, Any]:
+        if not context.idea:
+            raise ValueError("No idea in context. Run IdeaAnalyzerStage first.")
+
+        idea = context.idea
+        return {
+            "project_title": idea.title,
+            "project_summary": idea.summary,
+            "target_users": ", ".join(idea.target_users)
+            if idea.target_users
+            else "Not specified",
+            "functional_requirements": ", ".join(idea.functional_requirements)
+            if idea.functional_requirements
+            else "None identified yet",
+            "non_functional_requirements": ", ".join(idea.non_functional_requirements)
+            if idea.non_functional_requirements
+            else "None identified yet",
+        }
+
+    def parse_response(
+        self, response_text: str, context: ProjectContext
+    ) -> Requirements:
+        """Parse the JSON response into a Requirements model."""
+        data = self._extract_json(response_text)
+
+        title = data.get(
+            "project_title", context.idea.title if context.idea else "Untitled"
+        )
+
+        return Requirements(
+            project_title=title,
+            project_summary=data.get("project_summary", ""),
+            functional_requirements=data.get("functional_requirements", []),
+            non_functional_requirements=data.get("non_functional_requirements", []),
+            user_stories=data.get("user_stories", []),
+            acceptance_criteria=data.get("acceptance_criteria", []),
+            must_have=data.get("must_have", []),
+            should_have=data.get("should_have", []),
+            could_have=data.get("could_have", []),
+            external_dependencies=data.get("external_dependencies", []),
+            in_scope=data.get("in_scope", []),
+            out_of_scope=data.get("out_of_scope", []),
+        )
+
+    def update_context(
+        self, context: ProjectContext, parsed_output: Requirements
+    ) -> ProjectContext:
+        """Update context with Requirements model and save via ArtifactManager."""
+        context.requirements = parsed_output
+
+        # Use ArtifactManager instead of writing files directly
+        am = ArtifactManager.for_project(context.project_name)
+        am.save_markdown("requirements.md", parsed_output.to_markdown())
+
+        return context
+
+    def _extract_json(self, text: str) -> dict[str, Any]:
+        """Extract JSON from response text, handling markdown fences."""
+        text = text.strip()
+        if text.startswith("```"):
+            lines = text.split("\n")
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].strip() == "```":
+                lines = lines[:-1]
+            text = "\n".join(lines).strip()
+
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse JSON, trying regex fallback")
+            match = re.search(r"\{.*\}", text, re.DOTALL)
+            if match:
+                try:
+                    return json.loads(match.group())
+                except json.JSONDecodeError:
+                    pass
+            raise ProviderError(f"Provider returned invalid JSON: {text[:200]}")

@@ -24,14 +24,17 @@ def create_provider() -> AIProvider:
     """
     if AI_PROVIDER == "openai":
         from providers.openai import OpenAIProvider
+
         return OpenAIProvider()
 
     if AI_PROVIDER == "anthropic":
         from providers.anthropic import AnthropicProvider
+
         return AnthropicProvider()
 
     if AI_PROVIDER == "gemini":
         from providers.gemini import GeminiProvider
+
         return GeminiProvider()
 
     raise ConfigurationError(

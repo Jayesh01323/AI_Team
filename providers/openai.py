@@ -5,9 +5,12 @@ Requires OPENAI_API_KEY environment variable.
 Uses the OpenAI Python SDK under the hood.
 """
 
-from typing import Optional
-
-from core.config import OPENAI_API_KEY, OPENAI_MODEL, OPENAI_MAX_TOKENS, OPENAI_TEMPERATURE
+from core.config import (
+    OPENAI_API_KEY,
+    OPENAI_MAX_TOKENS,
+    OPENAI_MODEL,
+    OPENAI_TEMPERATURE,
+)
 from core.exceptions import ProviderAuthenticationError, ProviderError
 from core.logging import get_logger
 from models.common import GenerationResult
@@ -32,31 +35,31 @@ class OpenAIProvider(AIProvider):
 
         if not OPENAI_API_KEY:
             raise ProviderAuthenticationError(
-                "OPENAI_API_KEY is not set. "
-                "Set it in your environment or .env file."
+                "OPENAI_API_KEY is not set. Set it in your environment or .env file."
             )
 
         try:
             from openai import OpenAI
+
             self._client = OpenAI(api_key=OPENAI_API_KEY)
         except ImportError:
-            raise ProviderError(
-                "OpenAI SDK is not installed. Run: pip install openai"
-            )
+            raise ProviderError("OpenAI SDK is not installed. Run: pip install openai")
         except Exception as exc:
             raise ProviderAuthenticationError(
                 f"Failed to initialize OpenAI client: {exc}"
-            )
+            ) from exc
 
         return self._client
 
-    def generate(self, prompt: str, max_tokens: Optional[int] = None) -> GenerationResult:
+    def generate(self, prompt: str, max_tokens: int | None = None) -> GenerationResult:
         client = self._get_client()
         token_limit = max_tokens or self._max_tokens
 
         logger.debug(
             "OpenAI generate: model=%s max_tokens=%d temperature=%.1f",
-            self._model, token_limit, self._temperature,
+            self._model,
+            token_limit,
+            self._temperature,
         )
 
         try:
@@ -71,13 +74,14 @@ class OpenAIProvider(AIProvider):
             if "authentication" in error_msg or "api key" in error_msg:
                 raise ProviderAuthenticationError(
                     f"OpenAI authentication failed: {exc}"
-                )
+                ) from exc
             if "rate limit" in error_msg or "too many" in error_msg:
                 from core.exceptions import ProviderRateLimitError
+
                 raise ProviderRateLimitError(
                     f"OpenAI rate limit exceeded: {exc}"
-                )
-            raise ProviderError(f"OpenAI generation failed: {exc}")
+                ) from exc
+            raise ProviderError(f"OpenAI generation failed: {exc}") from exc
 
         try:
             choice = response.choices[0]
@@ -99,9 +103,7 @@ class OpenAIProvider(AIProvider):
                 output_tokens=output_tokens,
             )
         except (IndexError, AttributeError) as exc:
-            raise ProviderError(
-                f"Unexpected OpenAI response format: {exc}"
-            )
+            raise ProviderError(f"Unexpected OpenAI response format: {exc}")
 
     def name(self) -> str:
         return f"openai/{self._model}"

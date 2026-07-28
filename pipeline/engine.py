@@ -4,11 +4,11 @@ Pipeline engine.
 Manages the sequential execution of engineering stages.
 """
 
-from typing import List
 from brain.stages.base import Stage
+from core.logging import get_logger
 from models.project_context import ProjectContext
 from pipeline.executor import execute_stage
-from core.logging import get_logger
+from pipeline.registry import get_stage_class, list_stages
 
 logger = get_logger(__name__)
 
@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 class PipelineEngine:
     """Engine to execute a sequence of stages."""
 
-    def __init__(self, stages: List[Stage]):
+    def __init__(self, stages: list[Stage]):
         self.stages = stages
 
     def run(self, context: ProjectContext) -> ProjectContext:
@@ -34,3 +34,25 @@ class PipelineEngine:
             context = execute_stage(stage, context)
         logger.info("Pipeline execution complete")
         return context
+
+    @classmethod
+    def from_registry(cls, stage_names: list[str] | None = None) -> "PipelineEngine":
+        """
+        Create a PipelineEngine from the stage registry.
+
+        Args:
+            stage_names: Optional list of stage names to include.
+                        If None, includes all registered stages in order.
+
+        Returns:
+            A PipelineEngine instance with the requested stages.
+        """
+        if stage_names is None:
+            stage_names = list_stages()
+
+        stages = []
+        for name in stage_names:
+            stage_class = get_stage_class(name)
+            stages.append(stage_class())
+
+        return cls(stages)
