@@ -5,18 +5,13 @@ This is the first Engineering Brain stage. It inherits from LLMStage
 to handle common LLM orchestration.
 """
 
-import json
-import re
 from typing import Any
 
+from brain.json_utils import extract_json_from_response
 from brain.stages.llm_stage import LLMStage
-from core.exceptions import ProviderError
-from core.logging import get_logger
 from models.idea import Idea
 from models.project_context import ProjectContext
 from pipeline.registry import register_stage
-
-logger = get_logger(__name__)
 
 
 @register_stage
@@ -38,7 +33,7 @@ class IdeaAnalyzerStage(LLMStage):
 
     def parse_response(self, response_text: str, context: ProjectContext) -> Idea:
         """Parse the JSON response into an Idea model."""
-        data = self._extract_json(response_text)
+        data = extract_json_from_response(response_text)
 
         # Populate Idea model
         title = data.get("title", "")
@@ -64,29 +59,6 @@ class IdeaAnalyzerStage(LLMStage):
     ) -> ProjectContext:
         context.idea = parsed_output
         return context
-
-    def _extract_json(self, text: str) -> dict[str, Any]:
-        """Extract JSON from response text, handling markdown fences."""
-        text = text.strip()
-        if text.startswith("```"):
-            lines = text.split("\n")
-            if lines[0].startswith("```"):
-                lines = lines[1:]
-            if lines and lines[-1].strip() == "```":
-                lines = lines[:-1]
-            text = "\n".join(lines).strip()
-
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            logger.warning("Failed to parse JSON, trying regex fallback")
-            match = re.search(r"\{.*\}", text, re.DOTALL)
-            if match:
-                try:
-                    return json.loads(match.group())
-                except json.JSONDecodeError:
-                    pass
-            raise ProviderError(f"Provider returned invalid JSON: {text[:200]}")
 
 
 def analyze_idea(idea_text: str) -> ProjectContext:

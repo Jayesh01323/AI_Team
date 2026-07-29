@@ -4,7 +4,6 @@ CLI commands call this service. The service calls brain stages.
 This keeps the CLI independent of brain implementation details.
 """
 
-import brain.stages  # Ensure stages are registered
 from core.logging import get_logger
 from models.project_context import ProjectContext
 from pipeline.engine import PipelineEngine

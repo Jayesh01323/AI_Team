@@ -1,0 +1,5 @@
+[2026-07-29 17:37:13] [OpenHands] Starting task execution: Task: openhands Lifecycle
+Description: Verify openhands adapter lifecycle
+[2026-07-29 17:37:13] [OpenHands] Task contract written and validated (v1.0) at C:\Users\Jayesh\OneDrive\Desktop\AI-Engineering-Team\projects\.workspaces\4948cf12-63b6-4a6a-924c-642ef2b7b097\.ai\openhands_contract.json
+[2026-07-29 17:37:13] [OpenHands] Task execution completed in 0.04s.
+[2026-07-29 17:37:13] [OpenHands] Cleaning up adapter state.

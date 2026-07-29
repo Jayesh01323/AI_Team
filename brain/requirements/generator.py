@@ -5,19 +5,14 @@ This is the second Engineering Brain stage. It inherits from LLMStage
 and produces both a domain model and a Markdown file.
 """
 
-import json
-import re
 from typing import Any
 
+from brain.json_utils import extract_json_from_response
 from brain.stages.llm_stage import LLMStage
-from core.exceptions import ProviderError
-from core.logging import get_logger
 from models.project_context import ProjectContext
 from models.requirements import Requirements
 from pipeline.artifacts import ArtifactManager
 from pipeline.registry import register_stage
-
-logger = get_logger(__name__)
 
 
 @register_stage
@@ -55,7 +50,7 @@ class RequirementsGeneratorStage(LLMStage):
         self, response_text: str, context: ProjectContext
     ) -> Requirements:
         """Parse the JSON response into a Requirements model."""
-        data = self._extract_json(response_text)
+        data = extract_json_from_response(response_text)
 
         title = data.get(
             "project_title", context.idea.title if context.idea else "Untitled"
@@ -87,26 +82,3 @@ class RequirementsGeneratorStage(LLMStage):
         am.save_markdown("requirements.md", parsed_output.to_markdown())
 
         return context
-
-    def _extract_json(self, text: str) -> dict[str, Any]:
-        """Extract JSON from response text, handling markdown fences."""
-        text = text.strip()
-        if text.startswith("```"):
-            lines = text.split("\n")
-            if lines[0].startswith("```"):
-                lines = lines[1:]
-            if lines and lines[-1].strip() == "```":
-                lines = lines[:-1]
-            text = "\n".join(lines).strip()
-
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            logger.warning("Failed to parse JSON, trying regex fallback")
-            match = re.search(r"\{.*\}", text, re.DOTALL)
-            if match:
-                try:
-                    return json.loads(match.group())
-                except json.JSONDecodeError:
-                    pass
-            raise ProviderError(f"Provider returned invalid JSON: {text[:200]}")

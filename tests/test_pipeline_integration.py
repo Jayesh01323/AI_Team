@@ -8,13 +8,14 @@ requiring actual API credentials.
 import json
 from unittest.mock import MagicMock, patch
 
-import brain.stages
-from brain.architecture.generator import ArchitectureGeneratorStage
-from brain.idea.analyzer import IdeaAnalyzerStage
-from brain.planner.generator import TaskPlannerStage
-from brain.prd.generator import PRDGeneratorStage
-from brain.requirements.generator import RequirementsGeneratorStage
-from brain.specification.generator import ProjectSpecificationGeneratorStage
+from brain.stages import (
+    ArchitectureGeneratorStage,
+    IdeaAnalyzerStage,
+    PRDGeneratorStage,
+    ProjectSpecificationGeneratorStage,
+    RequirementsGeneratorStage,
+    TaskPlannerStage,
+)
 from models.architecture import Architecture
 from models.idea import Idea
 from models.prd import PRD

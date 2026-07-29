@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "task_id": "48badb2d-c057-4306-8904-7a903bf21e20",
+  "project_name": "C:\\Users\\Jayesh\\AppData\\Local\\Temp\\pytest-of-Jayesh\\pytest-48\\test_e2e_successful_execution_0\\target_repo",
+  "workspace_dir": "C:\\Users\\Jayesh\\OneDrive\\Desktop\\AI-Engineering-Team\\projects\\.workspaces\\49d35808-a3e6-43c3-b574-01c589cc2cb7",
+  "task_instruction": "Task: End-to-End Success\nDescription: Verify successful execution flow",
+  "model": "openhands-default",
+  "timeout": 30.0,
+  "acceptance_criteria": [],
+  "context": {
+    "tech_stack": {}
+  },
+  "max_retries": 3
+}

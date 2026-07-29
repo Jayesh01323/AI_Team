@@ -1,0 +1,13 @@
+{
+  "project": "test-runtime-v2",
+  "idea": "test-runtime-v2",
+  "tech_stack": {
+    "backend": null,
+    "frontend": null,
+    "database": null,
+    "language": null,
+    "framework": null
+  },
+  "dependencies": [],
+  "status": "placeholder"
+}

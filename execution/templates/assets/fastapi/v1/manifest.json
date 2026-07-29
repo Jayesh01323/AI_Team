@@ -1,0 +1,14 @@
+{
+  "template_id": "fastapi",
+  "version": "v1",
+  "technologies": [
+    "python",
+    "fastapi"
+  ],
+  "variables": [
+    "api_port"
+  ],
+  "compatibility": {
+    "os": "all"
+  }
+}

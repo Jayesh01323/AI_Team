@@ -1,0 +1,7 @@
+{
+  "template_id": "base",
+  "version": "v1",
+  "technologies": ["core"],
+  "variables": ["project_name", "project_description", "database_url", "api_port"],
+  "compatibility": {"os": "all"}
+}

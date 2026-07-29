@@ -15,4 +15,4 @@ dependencies = [
 ai-team = "cli.main:cli"
 
 [tool.setuptools.packages.find]
-include = ["brain*", "cli*", "core*", "providers*", "app*", "models*", "pipeline*"]
+include = ["brain*", "cli*", "core*", "providers*", "app*", "models*", "pipeline*", "execution*"]

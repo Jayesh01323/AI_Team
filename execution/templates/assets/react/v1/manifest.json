@@ -1,0 +1,13 @@
+{
+  "template_id": "react",
+  "version": "v1",
+  "technologies": [
+    "typescript",
+    "react",
+    "vite"
+  ],
+  "variables": ["project_name"],
+  "compatibility": {
+    "os": "all"
+  }
+}

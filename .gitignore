@@ -8,6 +8,8 @@ venv/
 .vscode/
 node_modules/
 .pytest_cache/
+.ruff_cache/
+.mypy_cache/
 .DS_Store
 ai_engineering_team.egg-info/
 *.egg-info/

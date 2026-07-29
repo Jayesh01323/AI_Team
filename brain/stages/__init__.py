@@ -1,8 +1,9 @@
 # Engineering Brain Stages Package
 # Each stage is a self-contained pipeline step.
+# IMPORTANT: Import order determines pipeline execution order via @register_stage.
+# Do NOT re-sort these imports alphabetically.
 
-# noqa: I001
-from brain.idea.analyzer import IdeaAnalyzerStage
+from brain.idea.analyzer import IdeaAnalyzerStage  # noqa: I001
 from brain.requirements.generator import RequirementsGeneratorStage
 from brain.prd.generator import PRDGeneratorStage
 from brain.specification.generator import ProjectSpecificationGeneratorStage
@@ -10,10 +11,10 @@ from brain.architecture.generator import ArchitectureGeneratorStage
 from brain.planner.generator import TaskPlannerStage
 
 __all__ = [
+    "ArchitectureGeneratorStage",
     "IdeaAnalyzerStage",
-    "RequirementsGeneratorStage",
     "PRDGeneratorStage",
     "ProjectSpecificationGeneratorStage",
-    "ArchitectureGeneratorStage",
+    "RequirementsGeneratorStage",
     "TaskPlannerStage",
 ]

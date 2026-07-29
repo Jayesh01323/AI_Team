@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "task_id": "031aa536-6249-4040-8b4a-6d647bddc1a6",
+  "project_name": "C:\\Users\\Jayesh\\AppData\\Local\\Temp\\pytest-of-Jayesh\\pytest-48\\test_e2e_each_provider_lifecyc0\\repo_openhands",
+  "workspace_dir": "C:\\Users\\Jayesh\\OneDrive\\Desktop\\AI-Engineering-Team\\projects\\.workspaces\\1b5c8585-3085-4196-a363-4040d9d23c83",
+  "task_instruction": "Task: openhands Lifecycle\nDescription: Verify openhands adapter lifecycle",
+  "model": "openhands-default",
+  "timeout": 30.0,
+  "acceptance_criteria": [],
+  "context": {
+    "tech_stack": {}
+  },
+  "max_retries": 3
+}

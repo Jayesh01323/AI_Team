@@ -6,7 +6,7 @@ current context and writes its output back. The context grows as stages complete
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from models.architecture import Architecture
 from models.idea import Idea
@@ -58,12 +58,11 @@ class ProjectContext:
     # Project identification
     project_name: str = ""
     created_at: str = ""
+    correlation_id: str | None = None
 
     def __post_init__(self) -> None:
         if not self.created_at:
-            self.created_at = (
-                datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-            )
+            self.created_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         if not self.project_name and self.raw_idea:
             import re
 
@@ -84,7 +83,7 @@ class ProjectContext:
         """Mark a stage as running."""
         stage = self.get_stage(name)
         stage.status = "running"
-        stage.started_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        stage.started_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         if provider_name:
             stage.provider_name = provider_name
         if model:
@@ -99,9 +98,7 @@ class ProjectContext:
         """Mark a stage as completed."""
         stage = self.get_stage(name)
         stage.status = "completed"
-        stage.completed_at = (
-            datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-        )
+        stage.completed_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         if input_tokens is not None:
             stage.input_tokens = input_tokens
         if output_tokens is not None:
@@ -111,9 +108,7 @@ class ProjectContext:
         """Mark a stage as failed."""
         stage = self.get_stage(name)
         stage.status = "failed"
-        stage.completed_at = (
-            datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-        )
+        stage.completed_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         stage.error = error
 
     def to_dict(self) -> dict:

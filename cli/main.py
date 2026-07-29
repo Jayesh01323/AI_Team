@@ -312,5 +312,40 @@ def pipeline(idea: str):
         raise SystemExit(1) from exc
 
 
+@cli.command()
+@click.argument("idea")
+def scaffold(idea: str):
+    """
+    Run the Engineering Brain and scaffold the repository.
+    """
+    from app.brain_service import run_full_pipeline
+    from core.config import PROJECTS_DIR
+    from execution.repository.generator import RepositoryGenerator
+
+    click.echo("")
+    click.echo("=== Running Engineering Brain & Scaffolding ===")
+    click.echo("")
+
+    try:
+        click.echo("1. Running Engineering Pipeline...")
+        context = run_full_pipeline(idea)
+
+        click.echo("2. Generating Repository...")
+        generator = RepositoryGenerator(base_dir=PROJECTS_DIR)
+        report = generator.generate(context)
+
+        if report.is_successful():
+            click.echo(f"SUCCESS: Repository scaffolded at {report.repository_path}")
+            for f in report.files_created:
+                click.echo(f"  Created: {f}")
+        else:
+            click.echo(f"FAILED: Repository generation failed: {report.error_message}")
+            raise SystemExit(1)
+
+    except Exception as exc:
+        click.echo(f"ERROR: {exc!s}")
+        raise SystemExit(1) from exc
+
+
 if __name__ == "__main__":
     cli()
