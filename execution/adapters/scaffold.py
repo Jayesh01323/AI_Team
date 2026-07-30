@@ -156,7 +156,7 @@ class ProviderScaffoldAdapter(ExecutionAdapter):
     def _convert_to_contract(self, instruction: str) -> dict[str, Any]:
         """Convert instruction to a standardised contract dictionary."""
         task_id = str(uuid.uuid4())
-        tech_stack = {}
+        tech_stack: dict[str, str] = {}
         if (
             self.context
             and hasattr(self.context, "architecture")

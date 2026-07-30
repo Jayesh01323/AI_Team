@@ -9,7 +9,20 @@ description = "Autonomous AI Engineering Team - CLI"
 requires-python = ">=3.11"
 dependencies = [
     "click>=8.0.0",
+    "openai>=1.0.0",
+    "pydantic>=2.0.0",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+    "bandit>=1.7.0",
+]
+
+[tool.bandit]
+skip_checks = ["B101"]
 
 [project.scripts]
 ai-team = "cli.main:cli"
