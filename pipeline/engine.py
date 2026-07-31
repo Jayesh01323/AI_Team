@@ -4,6 +4,14 @@ Pipeline engine.
 Manages the sequential execution of engineering stages.
 """
 
+from brain.stages import (
+    ArchitectureGeneratorStage,
+    IdeaAnalyzerStage,
+    PRDGeneratorStage,
+    ProjectSpecificationGeneratorStage,
+    RequirementsGeneratorStage,
+    TaskPlannerStage,
+)
 from brain.stages.base import Stage
 from core.logging import get_logger
 from models.project_context import ProjectContext

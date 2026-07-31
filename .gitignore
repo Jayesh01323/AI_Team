@@ -16,3 +16,9 @@ ai_engineering_team.egg-info/
 dist/
 build/
 *.egg
+
+# Runtime workspace sandboxes (UUID-named, generated per pipeline run)
+projects/.workspaces/
+
+# Runtime project state (timestamps only, not stable fixtures)
+projects/*/context.json

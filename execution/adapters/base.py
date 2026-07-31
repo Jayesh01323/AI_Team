@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-from models.execution import ExecutionResult, HealthCheckResult
+from models.execution import AdapterConfiguration, ExecutionResult, HealthCheckResult
 from models.project_context import ProjectContext
 
 
 class ExecutionAdapter(ABC):
+    config: AdapterConfiguration | None = None
+
     @abstractmethod
     def prepare(self, context: ProjectContext, project_dir: Path) -> None:
         pass
