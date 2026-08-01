@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from brain.specification.models import LivingSpecification
 from brain.planner.models import Plan
 from .models import Architecture
@@ -21,7 +21,7 @@ class ArchitectureGenerator:
     """The deterministic Architecture Generator."""
     
     @staticmethod
-    def generate_architecture(spec: LivingSpecification, plan: Plan, knowledge_data: Dict[str, Any] = None, decision_data: Dict[str, Any] = None) -> Architecture:
+    def generate_architecture(spec: LivingSpecification, plan: Plan, knowledge_data: Optional[Dict[str, Any]] = None, decision_data: Optional[Dict[str, Any]] = None) -> Architecture:
         arch = Architecture(project_name=spec.project_name)
         
         # 1. Map requirements to components

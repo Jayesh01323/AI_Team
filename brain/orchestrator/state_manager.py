@@ -1,10 +1,10 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from .models import Workflow, ExecutionStatus, TaskAssignment
 import time
 
 class StateManager:
     @staticmethod
-    def update_state(workflow: Workflow, task_id: str, new_status: ExecutionStatus, result: Dict[str, Any] = None, error: str = None) -> None:
+    def update_state(workflow: Workflow, task_id: str, new_status: ExecutionStatus, result: Optional[Dict[str, Any]] = None, error: Optional[str] = None) -> None:
         if task_id not in workflow.assignments:
             raise ValueError(f"Task {task_id} not found in workflow")
             

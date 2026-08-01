@@ -41,6 +41,7 @@ class RuffValidator(Validator):
                 capture_output=True,
                 text=True,
                 check=False,
+                timeout=60,
             )
             success = res.returncode == 0
             errors = [] if success else [res.stdout + res.stderr]
@@ -49,6 +50,14 @@ class RuffValidator(Validator):
                 validator_name=self.name,
                 errors=errors,
                 output=res.stdout + res.stderr,
+                correlation_id=correlation_id,
+            )
+        except subprocess.TimeoutExpired:
+            return ValidationResult(
+                success=False,
+                validator_name=self.name,
+                errors=["Validation timed out after 60 seconds"],
+                output="",
                 correlation_id=correlation_id,
             )
         except Exception as e:  # noqa: BLE001
@@ -76,6 +85,7 @@ class RuffFormatValidator(Validator):
                 capture_output=True,
                 text=True,
                 check=False,
+                timeout=60,
             )
             success = res.returncode == 0
             errors = [] if success else [res.stdout + res.stderr]
@@ -84,6 +94,14 @@ class RuffFormatValidator(Validator):
                 validator_name=self.name,
                 errors=errors,
                 output=res.stdout + res.stderr,
+                correlation_id=correlation_id,
+            )
+        except subprocess.TimeoutExpired:
+            return ValidationResult(
+                success=False,
+                validator_name=self.name,
+                errors=["Validation timed out after 60 seconds"],
+                output="",
                 correlation_id=correlation_id,
             )
         except Exception as e:  # noqa: BLE001
@@ -111,6 +129,7 @@ class PytestValidator(Validator):
                 capture_output=True,
                 text=True,
                 check=False,
+                timeout=60,
             )
             success = res.returncode == 0
             errors = [] if success else [res.stdout + res.stderr]
@@ -119,6 +138,14 @@ class PytestValidator(Validator):
                 validator_name=self.name,
                 errors=errors,
                 output=res.stdout + res.stderr,
+                correlation_id=correlation_id,
+            )
+        except subprocess.TimeoutExpired:
+            return ValidationResult(
+                success=False,
+                validator_name=self.name,
+                errors=["Validation timed out after 60 seconds"],
+                output="",
                 correlation_id=correlation_id,
             )
         except Exception as e:  # noqa: BLE001

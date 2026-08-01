@@ -1,4 +1,4 @@
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Optional
 from .models import LivingSpecification
 from .updater import update_specification
 from .validator import validate_specification, ValidationResult
@@ -19,9 +19,9 @@ class LivingSpecificationGenerator:
     """The deterministic Living Specification Generator."""
     
     @staticmethod
-    def generate(knowledge_data: Dict[str, Any] = None, 
-                 intent_data: Dict[str, Any] = None, 
-                 decision_data: Dict[str, Any] = None) -> LivingSpecification:
+    def generate(knowledge_data: Optional[Dict[str, Any]] = None, 
+                 intent_data: Optional[Dict[str, Any]] = None, 
+                 decision_data: Optional[Dict[str, Any]] = None) -> LivingSpecification:
         """Generates an initial Living Specification from the outputs of the 
         Knowledge Model, Intent Engine, and Decision Engine."""
         

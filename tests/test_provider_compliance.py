@@ -13,7 +13,7 @@ A reusable test suite verifying that every registered provider adapter satisfies
 
 import json
 
-pytest_plugins = []
+pytest_plugins: list[str] = []
 import pytest
 
 from core.exceptions import (

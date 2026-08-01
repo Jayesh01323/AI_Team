@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from .models import Workflow, TaskAssignment, ExecutionStatus
 from .state_manager import StateManager
 from .registry import AgentRegistry
@@ -37,7 +37,7 @@ class Dispatcher:
             
         return dispatched
 
-    def handle_result(self, workflow: Workflow, task_id: str, success: bool, result: Dict[str, Any] = None, error: str = None) -> None:
+    def handle_result(self, workflow: Workflow, task_id: str, success: bool, result: Optional[Dict[str, Any]] = None, error: Optional[str] = None) -> None:
         if task_id not in workflow.assignments:
             raise ValueError(f"Unknown task {task_id}")
             

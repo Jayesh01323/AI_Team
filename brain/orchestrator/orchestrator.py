@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Optional
 from brain.planner.models import Plan
 from .models import AgentRegistration, Workflow, ValidationResult, ExecutionStatus
 from .registry import AgentRegistry
@@ -29,7 +29,7 @@ class MultiAgentOrchestrator:
         StateManager.evaluate_dependencies(workflow)
         return [a.task_id for a in StateManager.get_ready_tasks(workflow)]
 
-    def update_state(self, workflow: Workflow, task_id: str, success: bool, result: Dict[str, Any] = None, error: str = None) -> None:
+    def update_state(self, workflow: Workflow, task_id: str, success: bool, result: Optional[Dict[str, Any]] = None, error: Optional[str] = None) -> None:
         self.dispatcher.handle_result(workflow, task_id, success, result, error)
         
     def execution_history(self, workflow: Workflow) -> List[Dict[str, Any]]:

@@ -1,5 +1,6 @@
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Any
 from collections import defaultdict, deque
+from .models import Task
 
 class DependencyGraph:
     def __init__(self):
@@ -86,7 +87,7 @@ class DependencyGraph:
                     missing.append(dep)
         return missing
 
-    def build_from_tasks(self, tasks: List['Task']):
+    def build_from_tasks(self, tasks: List[Task]):
         for task in tasks:
             self.add_node(task.id)
             for dep in task.dependencies:

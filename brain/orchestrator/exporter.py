@@ -19,7 +19,7 @@ class OrchestratorExporter:
             f"Execution History Events: {len(workflow.execution_history)}"
         ]
         
-        counts = {}
+        counts: Dict[str, int] = {}
         for a in workflow.assignments.values():
             counts[a.status.value] = counts.get(a.status.value, 0) + 1
             

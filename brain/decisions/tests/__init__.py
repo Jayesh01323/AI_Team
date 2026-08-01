@@ -1,1 +1,1 @@
-# brain/decisions/tests package
+"""Tests for the decisions module."""

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from brain.intent.models import Gap, OpenQuestion
 from brain.intent.rules import MAX_QUESTIONS, MIN_QUESTION_IMPORTANCE
+from brain.knowledge import QuestionImportance
 
 
 def generate_questions(
@@ -116,7 +117,7 @@ def _generate_question_text(gap: Gap) -> str:
     return f"Please provide more information about: {gap.description}"
 
 
-def _map_importance(importance: str) -> str:
+def _map_importance(importance: str) -> QuestionImportance:
     """
     Map gap importance to question importance.
 
@@ -133,6 +134,6 @@ def _map_importance(importance: str) -> str:
     min_level = importance_order.get(MIN_QUESTION_IMPORTANCE, 1)
 
     if current_level < min_level:
-        return MIN_QUESTION_IMPORTANCE
+        return QuestionImportance(MIN_QUESTION_IMPORTANCE)
 
-    return importance
+    return QuestionImportance(importance)
