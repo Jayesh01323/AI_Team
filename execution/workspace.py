@@ -40,10 +40,29 @@ class WorkspaceManager:
         for item in src_path.iterdir():
             if item.name == ".workspaces" or item.name == "projects":
                 continue
+
+            # Prevent symlink traversal out of the workspace
+            if item.is_symlink() and not item.resolve().is_relative_to(src_path.resolve()):
+                logger.warning(f"Skipping unsafe top-level symlink: {item}")
+                continue
+
             if item.is_dir():
-                shutil.copytree(item, dest_path / item.name, symlinks=True)
+                def ignore_unsafe_symlinks(dir_path: str, contents: list[str]) -> list[str]:
+                    ignored = []
+                    for name in contents:
+                        p = Path(dir_path) / name
+                        if p.is_symlink() and not p.resolve().is_relative_to(src_path.resolve()):
+                            ignored.append(name)
+                    return ignored
+
+                shutil.copytree(
+                    item,
+                    dest_path / item.name,
+                    symlinks=True,
+                    ignore=ignore_unsafe_symlinks
+                )
             else:
-                shutil.copy2(item, dest_path / item.name)
+                shutil.copy2(item, dest_path / item.name, follow_symlinks=False)
 
         logger.info(f"Created workspace at: {dest_path}")
         return dest_path
