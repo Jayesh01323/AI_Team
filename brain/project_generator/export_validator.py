@@ -32,7 +32,7 @@ class ExportValidator:
                 
             # Traversal check
             norm_rel = os.path.normpath(rel_path)
-            if norm_rel.startswith('..') or norm_rel == '..':
+            if norm_rel.startswith('..' + os.sep) or norm_rel.startswith('../') or norm_rel == '..':
                 errors.append(f"Path traversal detected: {rel_path}")
                 continue
                 
@@ -46,7 +46,7 @@ class ExportValidator:
             
             # Combine to test resolution doesn't escape dest
             full_path = os.path.normpath(os.path.join(dest_norm, norm_rel))
-            if not full_path.startswith(dest_norm):
+            if os.path.commonpath([full_path, dest_norm]) != dest_norm:
                 errors.append(f"Path resolves outside destination: {rel_path}")
                 
         # Deterministic order
