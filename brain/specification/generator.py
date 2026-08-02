@@ -1,27 +1,41 @@
-from typing import Dict, Any, Tuple, Optional
+"""
+Living Specification Generator — Deterministic specification management.
+
+This module provides the LivingSpecificationGenerator for creating and
+managing Living Specifications. It is part of the DETERMINISTIC GENERATION
+system, separate from the LLM-powered legacy stage system.
+
+ARCHITECTURE BOUNDARY:
+  - LivingSpecificationGenerator: Deterministic, no LLM calls
+  - ProjectSpecificationGeneratorStage (below): Legacy LLM-based stage
+"""
+
+from typing import Any
+
+# Legacy pipeline imports (only for ProjectSpecificationGeneratorStage below)
+from core.logging import get_logger
+
+from .exporter import (
+    export_to_dict,
+    export_to_json,
+    generate_statistics,
+    generate_summary,
+)
+from .merger import merge_specifications
 from .models import LivingSpecification
 from .updater import update_specification
-from .validator import validate_specification, ValidationResult
-from .merger import merge_specifications
-from .exporter import export_to_dict, export_to_json, generate_summary, generate_statistics
-
-# Legacy pipeline imports
-from brain.stages.base import Stage
-from core.logging import get_logger
-from models.project_context import ProjectContext
-from models.project_specification import ProjectSpecification as LegacyProjectSpecification
-from pipeline.artifacts import ArtifactManager
-from pipeline.registry import register_stage
+from .validator import ValidationResult, validate_specification
 
 logger = get_logger(__name__)
+
 
 class LivingSpecificationGenerator:
     """The deterministic Living Specification Generator."""
     
     @staticmethod
-    def generate(knowledge_data: Optional[Dict[str, Any]] = None, 
-                 intent_data: Optional[Dict[str, Any]] = None, 
-                 decision_data: Optional[Dict[str, Any]] = None) -> LivingSpecification:
+    def generate(knowledge_data: dict[str, Any] | None = None, 
+                 intent_data: dict[str, Any] | None = None, 
+                 decision_data: dict[str, Any] | None = None) -> LivingSpecification:
         """Generates an initial Living Specification from the outputs of the 
         Knowledge Model, Intent Engine, and Decision Engine."""
         
@@ -60,7 +74,7 @@ class LivingSpecificationGenerator:
         return spec
     
     @staticmethod
-    def update(current: LivingSpecification, update: LivingSpecification) -> Tuple[LivingSpecification, ValidationResult]:
+    def update(current: LivingSpecification, update: LivingSpecification) -> tuple[LivingSpecification, ValidationResult]:
         return update_specification(current, update)
         
     @staticmethod
@@ -76,7 +90,7 @@ class LivingSpecificationGenerator:
         return export_to_json(spec, indent)
         
     @staticmethod
-    def export_dict(spec: LivingSpecification) -> Dict[str, Any]:
+    def export_dict(spec: LivingSpecification) -> dict[str, Any]:
         return export_to_dict(spec)
         
     @staticmethod
@@ -84,51 +98,9 @@ class LivingSpecificationGenerator:
         return generate_summary(spec)
         
     @staticmethod
-    def statistics(spec: LivingSpecification) -> Dict[str, int]:
+    def statistics(spec: LivingSpecification) -> dict[str, int]:
         return generate_statistics(spec)
 
 
-@register_stage
-class ProjectSpecificationGeneratorStage(Stage):
-    """Legacy Stage that assembles a validated ProjectSpecification from preceding outputs."""
-
-    @property
-    def name(self) -> str:
-        return "project_specification_generation"
-
-    def execute(self, context: ProjectContext) -> ProjectContext:
-        """
-        Assemble and validate the ProjectSpecification.
-        """
-        logger.info("Assembling ProjectSpecification...")
-
-        # 1. Validation
-        if not context.idea:
-            raise ValueError("No idea in context. Run IdeaAnalyzerStage first.")
-        if not context.requirements:
-            raise ValueError(
-                "No requirements in context. Run RequirementsGeneratorStage first."
-            )
-        if not context.prd:
-            raise ValueError("No PRD in context. Run PRDGeneratorStage first.")
-
-        # 2. Assemble ProjectSpecification
-        spec = LegacyProjectSpecification(
-            idea=context.idea,
-            requirements=context.requirements,
-            prd=context.prd,
-        )
-
-        context.project_specification = spec
-
-        # Start/Complete Stage Metadata
-        context.start_stage(self.name)
-
-        # 3. Save artifacts using ArtifactManager
-        am = ArtifactManager.for_project(context.project_name)
-        am.save_json("project_specification.json", spec.to_dict())
-
-        context.complete_stage(self.name, input_tokens=0, output_tokens=0)
-
-        logger.info("ProjectSpecification assembled and saved successfully.")
-        return context
+# Note: ProjectSpecificationGeneratorStage has been moved to brain/specification/legacy_stage.py
+# to avoid circular imports. It is imported in brain/stages/__init__.py from there.

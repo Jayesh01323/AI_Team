@@ -1,5 +1,6 @@
 from brain.project_generator.code_renderer import CodeRenderer
 
+
 def test_code_renderer():
     renderer = CodeRenderer()
     raw = "Hello {{NAME}}! Welcome to {{PROJECT}}."

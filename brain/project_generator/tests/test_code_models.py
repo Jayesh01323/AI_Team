@@ -1,4 +1,9 @@
-from brain.project_generator.code_models import GeneratedFile, GeneratedProject, CodeGenerationValidationResult
+from brain.project_generator.code_models import (
+    CodeGenerationValidationResult,
+    GeneratedFile,
+    GeneratedProject,
+)
+
 
 def test_generated_file_checksum():
     gf = GeneratedFile(

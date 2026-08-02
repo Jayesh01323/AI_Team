@@ -1,7 +1,7 @@
-import pytest
-from brain.orchestrator.workflow import WorkflowGenerator
 from brain.orchestrator.models import AgentType, ExecutionStatus
-from brain.planner.models import Plan, Milestone, Epic, Feature, Task
+from brain.orchestrator.workflow import WorkflowGenerator
+from brain.planner.models import Epic, Feature, Milestone, Plan, Task
+
 
 def test_workflow_generation():
     plan = Plan(

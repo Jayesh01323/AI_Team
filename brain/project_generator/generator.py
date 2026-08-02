@@ -1,5 +1,6 @@
-from .models import GeneratorContext
 from .interfaces import IProjectGenerator
+from .models import GeneratorContext
+
 
 class ProjectGenerator(IProjectGenerator):
     """

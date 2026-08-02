@@ -1,7 +1,7 @@
-import pytest
-from brain.orchestrator.orchestrator import MultiAgentOrchestrator
 from brain.orchestrator.models import AgentRegistration, AgentType
-from brain.planner.models import Plan, Milestone, Epic, Feature, Task
+from brain.orchestrator.orchestrator import MultiAgentOrchestrator
+from brain.planner.models import Epic, Feature, Milestone, Plan, Task
+
 
 def test_orchestrator_e2e():
     orchestrator = MultiAgentOrchestrator()

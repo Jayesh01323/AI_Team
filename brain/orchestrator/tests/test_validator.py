@@ -1,7 +1,12 @@
-import pytest
-from brain.orchestrator.validator import OrchestratorValidator
+from brain.orchestrator.models import (
+    AgentRegistration,
+    AgentType,
+    TaskAssignment,
+    Workflow,
+)
 from brain.orchestrator.registry import AgentRegistry
-from brain.orchestrator.models import Workflow, TaskAssignment, AgentType, AgentRegistration
+from brain.orchestrator.validator import OrchestratorValidator
+
 
 def test_validate_valid_workflow():
     registry = AgentRegistry()

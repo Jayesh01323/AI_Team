@@ -16,41 +16,35 @@ Covers:
 - Regression tests
 """
 
-import pytest
 
 from brain.intent import IntentEngine, IntentResult
-from brain.intent.classifier import classify_all, classify_domain, classify_product_category, classify_project_type
-from brain.intent.confidence import calculate_overall_confidence, calculate_section_confidence, is_confident
+from brain.intent.classifier import (
+    classify_all,
+    classify_domain,
+    classify_product_category,
+    classify_project_type,
+)
+from brain.intent.confidence import (
+    calculate_overall_confidence,
+    calculate_section_confidence,
+    is_confident,
+)
 from brain.intent.extractor import (
     extract_all_facts,
-    extract_business_goals,
-    extract_business_model,
-    extract_constraints,
-    extract_domain,
-    extract_preferences,
-    extract_product_category,
-    extract_project_type,
-    extract_requirements,
-    extract_target_users,
 )
-from brain.intent.gap_detector import detect_gaps, get_blocking_gaps, get_high_priority_gaps
+from brain.intent.gap_detector import (
+    detect_gaps,
+    get_blocking_gaps,
+    get_high_priority_gaps,
+)
 from brain.intent.models import (
-    ClassificationResult,
-    ExtractedFact,
     Gap,
-    IntentAnalysis,
     IntentResult,
-    NormalizedInput,
     SectionConfidence,
 )
 from brain.intent.question_generator import generate_questions
 from brain.intent.rules import (
-    BUSINESS_GOAL_INDICATORS,
-    CONSTRAINT_RULES,
-    PREFERENCE_RULES,
-    PROBLEM_INDICATORS,
     PROJECT_TYPE_RULES,
-    TARGET_USER_INDICATORS,
     classify_by_rules,
     get_matched_keywords,
     is_ambiguous,
@@ -58,7 +52,6 @@ from brain.intent.rules import (
     is_vague,
     match_keywords,
 )
-
 
 # ---------------------------------------------------------------------------
 # Normalization tests

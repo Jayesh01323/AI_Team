@@ -1,8 +1,14 @@
-from typing import List, Dict, Set
-from .template_models import TemplateMetadata, ResolvedTemplateSet, TemplateValidationResult
-from .template_registry import TemplateRegistry
-from .template_matcher import TemplateMatcher
+
 from brain.project_generator.models import ProjectBlueprint
+
+from .template_matcher import TemplateMatcher
+from .template_models import (
+    ResolvedTemplateSet,
+    TemplateMetadata,
+    TemplateValidationResult,
+)
+from .template_registry import TemplateRegistry
+
 
 class TemplateResolver:
     def __init__(self, registry: TemplateRegistry):
@@ -12,11 +18,11 @@ class TemplateResolver:
     def resolve_templates(self, blueprint: ProjectBlueprint) -> ResolvedTemplateSet:
         matched = self.matcher.match(blueprint)
         
-        selected: Dict[str, TemplateMetadata] = {}
-        ordering: List[str] = []
+        selected: dict[str, TemplateMetadata] = {}
+        ordering: list[str] = []
         errors = []
         
-        def add_template(template_id: str, trace: Set[str]):
+        def add_template(template_id: str, trace: set[str]):
             if template_id in selected:
                 return
             if template_id in trace:
@@ -39,7 +45,7 @@ class TemplateResolver:
         for t in matched:
             add_template(t.id, set())
 
-        categories: Dict[str, List[str]] = {}
+        categories: dict[str, list[str]] = {}
         for t in selected.values():
             categories.setdefault(t.category, []).append(t.id)
             

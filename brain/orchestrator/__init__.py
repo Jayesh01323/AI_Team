@@ -1,19 +1,19 @@
 from .models import (
+    AgentRegistration,
     AgentType,
     ExecutionStatus,
     TaskAssignment,
+    ValidationResult,
     Workflow,
-    AgentRegistration,
-    ValidationResult
 )
 from .orchestrator import MultiAgentOrchestrator
 
 __all__ = [
+    "AgentRegistration",
     "AgentType",
     "ExecutionStatus",
+    "MultiAgentOrchestrator",
     "TaskAssignment",
-    "Workflow",
-    "AgentRegistration",
     "ValidationResult",
-    "MultiAgentOrchestrator"
+    "Workflow"
 ]

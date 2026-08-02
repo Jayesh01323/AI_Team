@@ -1,5 +1,10 @@
+from brain.project_generator.assembly_models import (
+    AssembledProject,
+    ProjectDirectory,
+    ProjectFile,
+)
 from brain.project_generator.assembly_validator import AssemblyValidator
-from brain.project_generator.assembly_models import AssembledProject, ProjectDirectory, ProjectFile
+
 
 def test_validator_valid():
     validator = AssemblyValidator()

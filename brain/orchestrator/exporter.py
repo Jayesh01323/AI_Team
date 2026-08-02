@@ -1,10 +1,12 @@
 import json
-from typing import Dict, Any, List
+from typing import Any
+
 from .models import Workflow
+
 
 class OrchestratorExporter:
     @staticmethod
-    def to_dict(workflow: Workflow) -> Dict[str, Any]:
+    def to_dict(workflow: Workflow) -> dict[str, Any]:
         return workflow.model_dump(mode='json')
 
     @staticmethod
@@ -19,7 +21,7 @@ class OrchestratorExporter:
             f"Execution History Events: {len(workflow.execution_history)}"
         ]
         
-        counts: Dict[str, int] = {}
+        counts: dict[str, int] = {}
         for a in workflow.assignments.values():
             counts[a.status.value] = counts.get(a.status.value, 0) + 1
             
@@ -30,7 +32,7 @@ class OrchestratorExporter:
         return "\n".join(lines)
 
     @staticmethod
-    def statistics(workflow: Workflow) -> Dict[str, int]:
+    def statistics(workflow: Workflow) -> dict[str, int]:
         stats = {
             "total_tasks": len(workflow.assignments),
             "history_events": len(workflow.execution_history)

@@ -1,6 +1,8 @@
 import pytest
-from brain.orchestrator.registry import AgentRegistry
+
 from brain.orchestrator.models import AgentRegistration, AgentType
+from brain.orchestrator.registry import AgentRegistry
+
 
 def test_registry_add_get():
     registry = AgentRegistry()

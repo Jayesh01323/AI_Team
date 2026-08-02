@@ -1,11 +1,12 @@
-from typing import Dict, Any, List
-from .models import Plan, Task, TaskStatus, Milestone, Epic, Feature
+from brain.specification.models import LivingSpecification
+
+from .dependency_graph import DependencyGraph
+from .exporter import PlanExporter
+from .models import Epic, Feature, Milestone, Plan, Task, TaskStatus
+from .prioritizer import Prioritizer
 from .scheduler import Scheduler
 from .validator import PlanValidator, ValidationResult
-from .exporter import PlanExporter
-from .dependency_graph import DependencyGraph
-from .prioritizer import Prioritizer
-from brain.specification.models import LivingSpecification
+
 
 class Planner:
     """The deterministic Planner."""
@@ -64,32 +65,32 @@ class Planner:
         return PlanValidator.validate(plan)
         
     @staticmethod
-    def calculate_priorities(tasks: List[Task]) -> None:
+    def calculate_priorities(tasks: list[Task]) -> None:
         Prioritizer.calculate_priorities(tasks)
         
     @staticmethod
-    def build_dependency_graph(tasks: List[Task]) -> DependencyGraph:
+    def build_dependency_graph(tasks: list[Task]) -> DependencyGraph:
         graph = DependencyGraph()
         graph.build_from_tasks(tasks)
         return graph
         
     @staticmethod
-    def execution_order(plan: Plan) -> List[Task]:
+    def execution_order(plan: Plan) -> list[Task]:
         tasks = PlanExporter._get_all_tasks(plan)
         # Ensure they are scheduled
         Scheduler.schedule(tasks)
         return sorted(tasks, key=lambda t: t.execution_order)
         
     @staticmethod
-    def ready_tasks(plan: Plan) -> List[Task]:
+    def ready_tasks(plan: Plan) -> list[Task]:
         return [t for t in PlanExporter._get_all_tasks(plan) if t.status == TaskStatus.READY]
         
     @staticmethod
-    def blocked_tasks(plan: Plan) -> List[Task]:
+    def blocked_tasks(plan: Plan) -> list[Task]:
         return [t for t in PlanExporter._get_all_tasks(plan) if t.status == TaskStatus.BLOCKED]
         
     @staticmethod
-    def completed_tasks(plan: Plan) -> List[Task]:
+    def completed_tasks(plan: Plan) -> list[Task]:
         return [t for t in PlanExporter._get_all_tasks(plan) if t.status == TaskStatus.COMPLETED]
         
     @staticmethod
@@ -97,6 +98,6 @@ class Planner:
         return PlanExporter.summary(plan)
         
     @staticmethod
-    def statistics(plan: Plan) -> Dict[str, int]:
+    def statistics(plan: Plan) -> dict[str, int]:
         return PlanExporter.statistics(plan)
 

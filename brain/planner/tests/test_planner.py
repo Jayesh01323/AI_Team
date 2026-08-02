@@ -1,7 +1,7 @@
-import pytest
+from brain.planner.models import TaskStatus
 from brain.planner.planner import Planner
 from brain.specification.models import LivingSpecification, Requirement
-from brain.planner.models import TaskStatus
+
 
 def test_generate_plan():
     spec = LivingSpecification(

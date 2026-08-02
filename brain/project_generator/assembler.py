@@ -1,13 +1,21 @@
-from typing import List, Dict
-from .code_models import GeneratedProject, GeneratedFile
-from .assembly_models import AssembledProject, ProjectDirectory, ProjectFile, AssemblySummary, AssemblyStatistics
-from brain.project_generator.models import ProjectBlueprint
 import copy
+
+from brain.project_generator.models import ProjectBlueprint
+
+from .assembly_models import (
+    AssembledProject,
+    AssemblyStatistics,
+    AssemblySummary,
+    ProjectDirectory,
+    ProjectFile,
+)
+from .code_models import GeneratedProject
+
 
 class ProjectAssembler:
     def assemble(self, blueprint: ProjectBlueprint, generated_project: GeneratedProject) -> AssembledProject:
         root = ProjectDirectory(name=blueprint.project_name)
-        dir_map: Dict[str, ProjectDirectory] = {"": root}
+        dir_map: dict[str, ProjectDirectory] = {"": root}
         
         total_files = 0
         total_dirs = 0

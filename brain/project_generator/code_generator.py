@@ -1,8 +1,10 @@
-from .code_models import GeneratedProject, GeneratedFile
-from .code_renderer import CodeRenderer
-from .code_validator import CodeValidator
 from brain.project_generator.models import ProjectBlueprint
 from brain.project_generator.template_models import ResolvedTemplateSet
+
+from .code_models import GeneratedFile, GeneratedProject
+from .code_renderer import CodeRenderer
+from .code_validator import CodeValidator
+
 
 class CodeGenerator:
     def __init__(self):

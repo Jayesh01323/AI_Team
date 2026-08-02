@@ -1,6 +1,8 @@
 import pytest
+
 from brain.planner.dependency_graph import DependencyGraph
 from brain.planner.models import Task
+
 
 def test_topological_sort_no_cycle():
     graph = DependencyGraph()
@@ -40,4 +42,3 @@ def test_missing_dependency():
     # B was implicitly added by add_edge but it wasn't provided as a task, wait...
     # `add_edge` adds nodes. But `build_from_tasks` just calls `add_node` and `add_edge`.
     # Let's adjust test if needed, but it checks if node is in `self.nodes`. It will be.
-    pass

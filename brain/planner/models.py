@@ -1,7 +1,8 @@
-from typing import List, Dict, Any, Optional
-from enum import Enum
-from pydantic import BaseModel, Field
 from datetime import datetime
+from enum import Enum
+
+from pydantic import BaseModel, Field
+
 
 class TaskStatus(str, Enum):
     BACKLOG = "backlog"
@@ -20,29 +21,29 @@ class Task(BaseModel):
     title: str
     description: str = ""
     status: TaskStatus = TaskStatus.BACKLOG
-    dependencies: List[str] = Field(default_factory=list)
-    subtasks: List[Subtask] = Field(default_factory=list)
+    dependencies: list[str] = Field(default_factory=list)
+    subtasks: list[Subtask] = Field(default_factory=list)
     estimated_complexity: int = 1
     priority_score: float = 0.0
     execution_order: int = -1
-    blockers: List[str] = Field(default_factory=list)
+    blockers: list[str] = Field(default_factory=list)
 
 class Feature(BaseModel):
     id: str
     title: str
-    tasks: List[Task] = Field(default_factory=list)
+    tasks: list[Task] = Field(default_factory=list)
 
 class Epic(BaseModel):
     id: str
     title: str
-    features: List[Feature] = Field(default_factory=list)
+    features: list[Feature] = Field(default_factory=list)
 
 class Milestone(BaseModel):
     id: str
     title: str
-    epics: List[Epic] = Field(default_factory=list)
+    epics: list[Epic] = Field(default_factory=list)
 
 class Plan(BaseModel):
     project_name: str = "Unknown"
-    milestones: List[Milestone] = Field(default_factory=list)
+    milestones: list[Milestone] = Field(default_factory=list)
     last_updated: datetime = Field(default_factory=datetime.utcnow)

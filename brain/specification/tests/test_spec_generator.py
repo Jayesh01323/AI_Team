@@ -1,6 +1,6 @@
-import pytest
 from brain.specification.generator import LivingSpecificationGenerator
-from brain.specification.models import LivingSpecification, Requirement
+from brain.specification.models import LivingSpecification
+
 
 def test_generate_from_empty():
     spec = LivingSpecificationGenerator.generate()

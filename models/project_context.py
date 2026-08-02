@@ -64,12 +64,9 @@ class ProjectContext:
         if not self.created_at:
             self.created_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         if not self.project_name and self.raw_idea:
-            import re
+            from core.utils import sanitize_project_name
 
-            name = self.raw_idea.lower().strip()
-            name = re.sub(r"[^a-z0-9]+", "-", name)
-            name = name.strip("-")
-            self.project_name = name[:64]
+            self.project_name = sanitize_project_name(self.raw_idea)
 
     def get_stage(self, name: str) -> StageMetadata:
         """Get metadata for a stage, creating it if it doesn't exist."""

@@ -1,6 +1,13 @@
-import pytest
+from brain.architecture.models import (
+    APIEndpoint,
+    Architecture,
+    Component,
+    Dependency,
+    Module,
+    TraceabilityLink,
+)
 from brain.architecture.validator import ArchitectureValidator
-from brain.architecture.models import Architecture, Module, Component, Dependency, APIEndpoint, TraceabilityLink
+
 
 def test_validation_passes():
     arch = Architecture(

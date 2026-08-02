@@ -1,12 +1,13 @@
-from typing import List, Dict, Set, Any
 from collections import defaultdict, deque
+
 from .models import Task
+
 
 class DependencyGraph:
     def __init__(self):
-        self.adj: Dict[str, List[str]] = defaultdict(list)
-        self.in_degree: Dict[str, int] = defaultdict(int)
-        self.nodes: Set[str] = set()
+        self.adj: dict[str, list[str]] = defaultdict(list)
+        self.in_degree: dict[str, int] = defaultdict(int)
+        self.nodes: set[str] = set()
 
     def add_node(self, node: str):
         self.nodes.add(node)
@@ -44,7 +45,7 @@ class DependencyGraph:
                     return True
         return False
 
-    def topological_sort(self) -> List[str]:
+    def topological_sort(self) -> list[str]:
         if self.has_cycle():
             raise ValueError("Dependency cycle detected")
             
@@ -78,7 +79,7 @@ class DependencyGraph:
             
         return ordered
 
-    def get_missing_dependencies(self, declared_dependencies: Dict[str, List[str]]) -> List[str]:
+    def get_missing_dependencies(self, declared_dependencies: dict[str, list[str]]) -> list[str]:
         """Detects if a declared dependency is not a known node."""
         missing = []
         for task, deps in declared_dependencies.items():
@@ -87,7 +88,7 @@ class DependencyGraph:
                     missing.append(dep)
         return missing
 
-    def build_from_tasks(self, tasks: List[Task]):
+    def build_from_tasks(self, tasks: list[Task]):
         for task in tasks:
             self.add_node(task.id)
             for dep in task.dependencies:

@@ -1,7 +1,8 @@
-import pytest
 import json
+
 from brain.specification.generator import LivingSpecificationGenerator
-from brain.specification.models import LivingSpecification, Requirement, Decision
+from brain.specification.models import LivingSpecification
+
 
 def test_export_dict():
     spec = LivingSpecification(project_name="Test Project")

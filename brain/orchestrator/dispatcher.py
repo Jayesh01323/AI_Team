@@ -1,13 +1,15 @@
-from typing import List, Dict, Any, Tuple, Optional
-from .models import Workflow, TaskAssignment, ExecutionStatus
-from .state_manager import StateManager
+from typing import Any
+
+from .models import ExecutionStatus, Workflow
 from .registry import AgentRegistry
+from .state_manager import StateManager
+
 
 class Dispatcher:
     def __init__(self, registry: AgentRegistry):
         self.registry = registry
 
-    def dispatch(self, workflow: Workflow, max_tasks: int = 1) -> List[Tuple[str, str]]:
+    def dispatch(self, workflow: Workflow, max_tasks: int = 1) -> list[tuple[str, str]]:
         """
         Dispatches ready tasks to agents.
         Returns a list of tuples (task_id, assigned_agent_id).
@@ -37,7 +39,7 @@ class Dispatcher:
             
         return dispatched
 
-    def handle_result(self, workflow: Workflow, task_id: str, success: bool, result: Optional[Dict[str, Any]] = None, error: Optional[str] = None) -> None:
+    def handle_result(self, workflow: Workflow, task_id: str, success: bool, result: dict[str, Any] | None = None, error: str | None = None) -> None:
         if task_id not in workflow.assignments:
             raise ValueError(f"Unknown task {task_id}")
             

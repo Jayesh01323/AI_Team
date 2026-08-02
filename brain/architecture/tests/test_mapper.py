@@ -1,8 +1,8 @@
-import pytest
 from brain.architecture.mapper import ArchitectureMapper
 from brain.architecture.models import Architecture, Module
+from brain.planner.models import Epic, Feature, Milestone, Plan, Task
 from brain.specification.models import LivingSpecification, Requirement
-from brain.planner.models import Plan, Milestone, Epic, Feature, Task
+
 
 def test_map_requirements():
     spec = LivingSpecification(

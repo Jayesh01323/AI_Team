@@ -1,8 +1,14 @@
 from datetime import datetime
-from typing import List, Any
-from .models import LivingSpecification, Requirement, Decision, Constraint, Persona, EntityStatus
+from typing import Any
 
-def merge_lists(existing: List[Any], new: List[Any], key_attr: str = "id") -> List[Any]:
+from .models import (
+    Decision,
+    EntityStatus,
+    LivingSpecification,
+)
+
+
+def merge_lists(existing: list[Any], new: list[Any], key_attr: str = "id") -> list[Any]:
     """Merges two lists of objects, preferring new objects if they exist, 
     but retaining existing objects if not in new list."""
     merged_dict = {getattr(item, key_attr): item for item in existing}
@@ -10,7 +16,7 @@ def merge_lists(existing: List[Any], new: List[Any], key_attr: str = "id") -> Li
         merged_dict[getattr(item, key_attr)] = item
     return list(merged_dict.values())
 
-def merge_decisions(existing: List[Decision], new: List[Decision]) -> List[Decision]:
+def merge_decisions(existing: list[Decision], new: list[Decision]) -> list[Decision]:
     """Merges decisions. Never silently removes accepted decisions. 
     If a decision was accepted, and new update doesn't have it, keep it.
     If new update changes status of accepted decision without explicit supersede/reject, keep it accepted."""
@@ -40,7 +46,7 @@ def merge_specifications(current: LivingSpecification, update: LivingSpecificati
     confidence_score = update.confidence_score if update.confidence_score > 0 else current.confidence_score
 
     # 2. List fields of strings (union and deduplicate, preserve order)
-    def merge_string_lists(l1: List[str], l2: List[str]) -> List[str]:
+    def merge_string_lists(l1: list[str], l2: list[str]) -> list[str]:
         seen = set()
         result = []
         for item in l1 + l2:

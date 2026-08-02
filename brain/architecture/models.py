@@ -1,5 +1,5 @@
-from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
+
 
 class Dependency(BaseModel):
     source_id: str
@@ -11,25 +11,25 @@ class Component(BaseModel):
     name: str
     description: str
     type: str = "component" # service, module, ui_component, database, etc.
-    technologies: List[str] = Field(default_factory=list)
-    tasks: List[str] = Field(default_factory=list) # Traceability to tasks
+    technologies: list[str] = Field(default_factory=list)
+    tasks: list[str] = Field(default_factory=list) # Traceability to tasks
 
 class Module(BaseModel):
     id: str
     name: str
-    components: List[Component] = Field(default_factory=list)
+    components: list[Component] = Field(default_factory=list)
 
 class APIEndpoint(BaseModel):
     id: str
     path: str
     method: str
     description: str
-    module_id: Optional[str] = None
+    module_id: str | None = None
 
 class DataModel(BaseModel):
     id: str
     name: str
-    fields: Dict[str, str] = Field(default_factory=dict)
+    fields: dict[str, str] = Field(default_factory=dict)
     
 class TraceabilityLink(BaseModel):
     source_type: str # requirement, task, feature
@@ -42,26 +42,26 @@ class Architecture(BaseModel):
     system_overview: str = ""
     architecture_style: str = "Modular Monolith"
     
-    modules: List[Module] = Field(default_factory=list)
-    apis: List[APIEndpoint] = Field(default_factory=list)
-    data_models: List[DataModel] = Field(default_factory=list)
+    modules: list[Module] = Field(default_factory=list)
+    apis: list[APIEndpoint] = Field(default_factory=list)
+    data_models: list[DataModel] = Field(default_factory=list)
     
-    dependencies: List[Dependency] = Field(default_factory=list)
-    external_integrations: List[str] = Field(default_factory=list)
+    dependencies: list[Dependency] = Field(default_factory=list)
+    external_integrations: list[str] = Field(default_factory=list)
     
-    technology_mapping: Dict[str, str] = Field(default_factory=dict)
+    technology_mapping: dict[str, str] = Field(default_factory=dict)
     
-    folder_structure: List[str] = Field(default_factory=list)
-    data_flow: List[str] = Field(default_factory=list)
+    folder_structure: list[str] = Field(default_factory=list)
+    data_flow: list[str] = Field(default_factory=list)
     
-    security_considerations: List[str] = Field(default_factory=list)
-    testing_strategy: List[str] = Field(default_factory=list)
+    security_considerations: list[str] = Field(default_factory=list)
+    testing_strategy: list[str] = Field(default_factory=list)
     deployment_summary: str = ""
-    configuration_requirements: List[str] = Field(default_factory=list)
+    configuration_requirements: list[str] = Field(default_factory=list)
     
-    risks: List[str] = Field(default_factory=list)
-    constraints: List[str] = Field(default_factory=list)
-    assumptions: List[str] = Field(default_factory=list)
+    risks: list[str] = Field(default_factory=list)
+    constraints: list[str] = Field(default_factory=list)
+    assumptions: list[str] = Field(default_factory=list)
     
-    traceability_links: List[TraceabilityLink] = Field(default_factory=list)
+    traceability_links: list[TraceabilityLink] = Field(default_factory=list)
 

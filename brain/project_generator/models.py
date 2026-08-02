@@ -1,8 +1,10 @@
+
 from pydantic import BaseModel, Field
-from typing import List, Optional
-from brain.specification.models import LivingSpecification
-from brain.planner.models import Plan
+
 from brain.architecture.models import Architecture
+from brain.planner.models import Plan
+from brain.specification.models import LivingSpecification
+
 
 class GeneratedFile(BaseModel):
     path: str = Field(..., description="Relative path in the project")
@@ -11,15 +13,15 @@ class GeneratedFile(BaseModel):
 
 class ProjectBlueprint(BaseModel):
     project_name: str
-    specification: Optional[LivingSpecification] = Field(None, description="The Living Specification")
-    plan: Optional[Plan] = Field(None, description="The Plan")
-    architecture: Optional[Architecture] = Field(None, description="The Architecture")
+    specification: LivingSpecification | None = Field(None, description="The Living Specification")
+    plan: Plan | None = Field(None, description="The Plan")
+    architecture: Architecture | None = Field(None, description="The Architecture")
 
 class GeneratorContext(BaseModel):
     blueprint: ProjectBlueprint
-    original_intent: Optional[str] = Field(None, description="Read-only context")
-    generated_files: List[GeneratedFile] = Field(default_factory=list)
+    original_intent: str | None = Field(None, description="Read-only context")
+    generated_files: list[GeneratedFile] = Field(default_factory=list)
 
 class ValidationResult(BaseModel):
     is_valid: bool
-    errors: List[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)

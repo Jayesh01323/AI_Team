@@ -1,6 +1,11 @@
-import pytest
+from brain.orchestrator.models import (
+    AgentType,
+    ExecutionStatus,
+    TaskAssignment,
+    Workflow,
+)
 from brain.orchestrator.state_manager import StateManager
-from brain.orchestrator.models import Workflow, TaskAssignment, AgentType, ExecutionStatus
+
 
 def test_evaluate_dependencies():
     workflow = Workflow(

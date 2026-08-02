@@ -1,13 +1,15 @@
-from typing import List
+
+from brain.project_generator.models import ProjectBlueprint
+
 from .template_models import TemplateMetadata
 from .template_registry import TemplateRegistry
-from brain.project_generator.models import ProjectBlueprint
+
 
 class TemplateMatcher:
     def __init__(self, registry: TemplateRegistry):
         self.registry = registry
 
-    def match(self, blueprint: ProjectBlueprint) -> List[TemplateMetadata]:
+    def match(self, blueprint: ProjectBlueprint) -> list[TemplateMetadata]:
         languages = []
         frameworks = []
         backends = []
@@ -31,7 +33,7 @@ class TemplateMatcher:
 
         matched = []
         for template in self.registry.list_templates():
-            def has_match(supported: List[str], required: List[str]) -> bool:
+            def has_match(supported: list[str], required: list[str]) -> bool:
                 if not supported: return True
                 if not required: return True
                 supported_lower = [s.lower() for s in supported]

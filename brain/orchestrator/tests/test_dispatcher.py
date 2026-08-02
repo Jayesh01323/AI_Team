@@ -1,7 +1,13 @@
-import pytest
 from brain.orchestrator.dispatcher import Dispatcher
+from brain.orchestrator.models import (
+    AgentRegistration,
+    AgentType,
+    ExecutionStatus,
+    TaskAssignment,
+    Workflow,
+)
 from brain.orchestrator.registry import AgentRegistry
-from brain.orchestrator.models import Workflow, TaskAssignment, AgentType, ExecutionStatus, AgentRegistration
+
 
 def test_dispatch_tasks():
     registry = AgentRegistry()

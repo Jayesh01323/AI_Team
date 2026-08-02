@@ -6,7 +6,7 @@
 from brain.idea.analyzer import IdeaAnalyzerStage  # noqa: I001
 from brain.requirements.generator import RequirementsGeneratorStage
 from brain.prd.generator import PRDGeneratorStage
-from brain.specification.generator import ProjectSpecificationGeneratorStage
+from brain.specification.legacy_stage import ProjectSpecificationGeneratorStage
 from brain.architecture.generator import ArchitectureGeneratorStage
 from brain.planner.generator import TaskPlannerStage
 

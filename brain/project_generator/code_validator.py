@@ -1,5 +1,5 @@
-from typing import List
-from .code_models import GeneratedProject, CodeGenerationValidationResult
+from .code_models import CodeGenerationValidationResult, GeneratedProject
+
 
 class CodeValidator:
     def validate(self, project: GeneratedProject) -> CodeGenerationValidationResult:

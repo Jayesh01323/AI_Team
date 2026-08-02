@@ -1,6 +1,11 @@
-import pytest
-from brain.specification.models import LivingSpecification, Requirement, Decision, EntityStatus
 from brain.specification.merger import merge_specifications
+from brain.specification.models import (
+    Decision,
+    EntityStatus,
+    LivingSpecification,
+    Requirement,
+)
+
 
 def test_merge_decisions_never_silently_removes_accepted():
     d1 = Decision(id="d1", title="Use Python", description="Python 3.10+", status=EntityStatus.ACCEPTED)

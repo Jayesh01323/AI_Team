@@ -1,10 +1,12 @@
 import json
-from typing import Dict, Any, List
+from typing import Any
+
 from .models import Architecture
+
 
 class ArchitectureExporter:
     @staticmethod
-    def to_dict(arch: Architecture) -> Dict[str, Any]:
+    def to_dict(arch: Architecture) -> dict[str, Any]:
         return arch.model_dump(mode='json')
 
     @staticmethod
@@ -24,7 +26,7 @@ class ArchitectureExporter:
         return "\n".join(lines)
 
     @staticmethod
-    def statistics(arch: Architecture) -> Dict[str, int]:
+    def statistics(arch: Architecture) -> dict[str, int]:
         return {
             "modules_count": len(arch.modules),
             "components_count": sum(len(m.components) for m in arch.modules),

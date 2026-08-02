@@ -1,6 +1,6 @@
-import pytest
-from brain.planner.models import Plan, Milestone, Epic, Feature, Task
+from brain.planner.models import Epic, Feature, Milestone, Plan, Task
 from brain.planner.validator import PlanValidator
+
 
 def test_validation_passes_on_valid_plan():
     plan = Plan(

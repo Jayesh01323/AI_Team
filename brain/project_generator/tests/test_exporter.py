@@ -1,6 +1,7 @@
 from brain.project_generator.exporter import ProjectExporter
 from brain.project_generator.models import GeneratorContext, ProjectBlueprint
 
+
 def test_exporter():
     exporter = ProjectExporter()
     bp = ProjectBlueprint(project_name="TestApp")

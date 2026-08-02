@@ -1,4 +1,9 @@
-from brain.project_generator.template_models import TemplateMetadata, ResolvedTemplateSet, TemplateValidationResult
+from brain.project_generator.template_models import (
+    ResolvedTemplateSet,
+    TemplateMetadata,
+    TemplateValidationResult,
+)
+
 
 def test_template_metadata_defaults():
     t = TemplateMetadata(id="t1", name="Template 1", category="base")

@@ -1,21 +1,21 @@
 from .models import (
-    Dependency,
-    Component,
-    Module,
     APIEndpoint,
+    Architecture,
+    Component,
     DataModel,
+    Dependency,
+    Module,
     TraceabilityLink,
-    Architecture
 )
 from .validator import ValidationResult
 
 __all__ = [
-    "Dependency",
-    "Component",
-    "Module",
     "APIEndpoint",
-    "DataModel",
-    "TraceabilityLink",
     "Architecture",
+    "Component",
+    "DataModel",
+    "Dependency",
+    "Module",
+    "TraceabilityLink",
     "ValidationResult"
 ]

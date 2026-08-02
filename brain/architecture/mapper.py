@@ -1,7 +1,8 @@
-from typing import List, Dict
-from brain.specification.models import LivingSpecification, Requirement
-from brain.planner.models import Plan, Task
-from .models import Component, Module, TraceabilityLink, Architecture
+from brain.planner.models import Plan
+from brain.specification.models import LivingSpecification
+
+from .models import Architecture, Component, Module, TraceabilityLink
+
 
 class ArchitectureMapper:
     @staticmethod

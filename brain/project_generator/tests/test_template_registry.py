@@ -1,5 +1,6 @@
-from brain.project_generator.template_registry import TemplateRegistry
 from brain.project_generator.template_models import TemplateMetadata
+from brain.project_generator.template_registry import TemplateRegistry
+
 
 def test_template_registry():
     registry = TemplateRegistry()

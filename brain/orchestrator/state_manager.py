@@ -1,10 +1,12 @@
-from typing import Dict, Any, List, Optional
-from .models import Workflow, ExecutionStatus, TaskAssignment
 import time
+from typing import Any
+
+from .models import ExecutionStatus, TaskAssignment, Workflow
+
 
 class StateManager:
     @staticmethod
-    def update_state(workflow: Workflow, task_id: str, new_status: ExecutionStatus, result: Optional[Dict[str, Any]] = None, error: Optional[str] = None) -> None:
+    def update_state(workflow: Workflow, task_id: str, new_status: ExecutionStatus, result: dict[str, Any] | None = None, error: str | None = None) -> None:
         if task_id not in workflow.assignments:
             raise ValueError(f"Task {task_id} not found in workflow")
             
@@ -54,7 +56,7 @@ class StateManager:
                     StateManager.update_state(workflow, task_id, ExecutionStatus.PENDING)
 
     @staticmethod
-    def get_ready_tasks(workflow: Workflow) -> List[TaskAssignment]:
+    def get_ready_tasks(workflow: Workflow) -> list[TaskAssignment]:
         ready_tasks = []
         for task_id, assignment in workflow.assignments.items():
             if assignment.status == ExecutionStatus.PENDING:

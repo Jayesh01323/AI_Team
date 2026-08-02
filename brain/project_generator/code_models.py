@@ -1,10 +1,12 @@
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
 import hashlib
+from typing import Any
+
+from pydantic import BaseModel, Field
+
 
 class CodeGenerationValidationResult(BaseModel):
     is_valid: bool
-    errors: List[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
 
 class GeneratedFile(BaseModel):
     path: str
@@ -16,18 +18,18 @@ class GeneratedFile(BaseModel):
     template_id: str = ""
     generated_from: str = ""
     checksum: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
     def calculate_checksum(self) -> str:
         return hashlib.sha256(self.content.encode('utf-8')).hexdigest()
 
 class GeneratedProject(BaseModel):
-    generated_files: List[GeneratedFile] = Field(default_factory=list)
+    generated_files: list[GeneratedFile] = Field(default_factory=list)
     generation_summary: str = ""
-    generation_metadata: Dict[str, Any] = Field(default_factory=dict)
-    validation_result: Optional[CodeGenerationValidationResult] = None
+    generation_metadata: dict[str, Any] = Field(default_factory=dict)
+    validation_result: CodeGenerationValidationResult | None = None
 
-    def export_dict(self) -> Dict[str, Any]:
+    def export_dict(self) -> dict[str, Any]:
         return self.model_dump()
         
     def export_json(self) -> str:

@@ -1,7 +1,15 @@
-import pytest
 import json
-from brain.architecture.models import Architecture, Module, Component, Dependency, APIEndpoint, DataModel
+
 from brain.architecture.exporter import ArchitectureExporter
+from brain.architecture.models import (
+    APIEndpoint,
+    Architecture,
+    Component,
+    DataModel,
+    Dependency,
+    Module,
+)
+
 
 def test_export_dict():
     arch = Architecture(project_name="Arch Test")

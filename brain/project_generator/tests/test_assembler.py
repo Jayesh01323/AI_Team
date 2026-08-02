@@ -1,6 +1,7 @@
 from brain.project_generator.assembler import ProjectAssembler
+from brain.project_generator.code_models import GeneratedFile, GeneratedProject
 from brain.project_generator.models import ProjectBlueprint
-from brain.project_generator.code_models import GeneratedProject, GeneratedFile
+
 
 def test_project_assembler():
     assembler = ProjectAssembler()

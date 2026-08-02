@@ -11,23 +11,15 @@ Usage:
 """
 
 import json
-import re
 from pathlib import Path
 
 import click
 
 from core.config import PROJECTS_DIR
 from core.logging import get_logger
+from core.utils import sanitize_project_name
 
 logger = get_logger(__name__)
-
-
-def sanitize_project_name(idea: str) -> str:
-    """Convert an idea string into a sanitized directory name."""
-    name = idea.lower().strip()
-    name = re.sub(r"[^a-z0-9]+", "-", name)
-    name = name.strip("-")
-    return name[:64]
 
 
 def create_placeholder_file(filepath: Path, content: str) -> None:

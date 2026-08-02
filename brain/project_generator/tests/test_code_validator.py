@@ -1,5 +1,6 @@
+from brain.project_generator.code_models import GeneratedFile, GeneratedProject
 from brain.project_generator.code_validator import CodeValidator
-from brain.project_generator.code_models import GeneratedProject, GeneratedFile
+
 
 def test_validator_valid():
     validator = CodeValidator()

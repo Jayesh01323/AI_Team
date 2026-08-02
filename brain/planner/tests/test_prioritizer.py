@@ -1,6 +1,6 @@
-import pytest
-from brain.planner.prioritizer import Prioritizer
 from brain.planner.models import Task
+from brain.planner.prioritizer import Prioritizer
+
 
 def test_prioritizer():
     # T1 has 2 tasks depending on it

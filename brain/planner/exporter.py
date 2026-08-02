@@ -1,10 +1,12 @@
 import json
-from typing import Dict, Any, List
+from typing import Any
+
 from .models import Plan, Task, TaskStatus
+
 
 class PlanExporter:
     @staticmethod
-    def to_dict(plan: Plan) -> Dict[str, Any]:
+    def to_dict(plan: Plan) -> dict[str, Any]:
         return plan.model_dump(mode='json')
 
     @staticmethod
@@ -28,7 +30,7 @@ class PlanExporter:
         return "\n".join(lines)
 
     @staticmethod
-    def statistics(plan: Plan) -> Dict[str, int]:
+    def statistics(plan: Plan) -> dict[str, int]:
         all_tasks = PlanExporter._get_all_tasks(plan)
         return {
             "total_milestones": len(plan.milestones),
@@ -42,7 +44,7 @@ class PlanExporter:
         }
         
     @staticmethod
-    def _get_all_tasks(plan: Plan) -> List[Task]:
+    def _get_all_tasks(plan: Plan) -> list[Task]:
         tasks = []
         for milestone in plan.milestones:
             for epic in milestone.epics:

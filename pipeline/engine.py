@@ -1,17 +1,30 @@
 """
-Pipeline engine.
+Pipeline Engine — LLM-Powered Analysis Pipeline (LEGACY)
 
-Manages the sequential execution of engineering stages.
+Manages the sequential execution of engineering stages using AI providers.
+This is the LEGACY pipeline for transforming raw ideas into structured models.
+
+ARCHITECTURE BOUNDARY:
+-----------------------
+This is the LLM-POWERED ANALYSIS path, distinct from:
+
+  - brain/project_generator/pipeline.py (ProjectGenerationPipeline): Deterministic generation
+      Purpose: Generate actual code from approved blueprints
+      Stages: Template Resolution → Code Generation → Assembly → Validation → Repair → Export
+      Input: ProjectBlueprint
+      Output: Generated project files on disk
+
+  - pipeline/engine.py (PipelineEngine): LLM-powered analysis pipeline [THIS FILE]
+      Purpose: Transform raw ideas into structured models using AI
+      Stages: Idea Analysis → Requirements → PRD → Architecture → Task Planning
+      Input: Raw idea text
+      Output: ProjectContext with structured domain models
+
+DO NOT mix these two pipelines. They serve different phases of the workflow.
+For new code, prefer the deterministic generators in brain.specification, 
+brain.architecture, and brain.planner over these legacy stages.
 """
 
-from brain.stages import (
-    ArchitectureGeneratorStage,
-    IdeaAnalyzerStage,
-    PRDGeneratorStage,
-    ProjectSpecificationGeneratorStage,
-    RequirementsGeneratorStage,
-    TaskPlannerStage,
-)
 from brain.stages.base import Stage
 from core.logging import get_logger
 from models.project_context import ProjectContext
@@ -53,14 +66,22 @@ class PipelineEngine:
                         If None, includes all registered stages in order.
 
         Returns:
-            A PipelineEngine instance with the requested stages.
+            A PipelineEngine instance with the requested stages, sorted by execution order.
         """
         if stage_names is None:
             stage_names = list_stages()
 
-        stages = []
+        # Sort stages by their registered execution order
+        stages_with_order = []
         for name in stage_names:
             stage_class = get_stage_class(name)
-            stages.append(stage_class())
+            # Get order from registry
+            from pipeline.registry import _REGISTRY
+            _, order = _REGISTRY[name]
+            stages_with_order.append((order, stage_class))
+        
+        # Sort by order and instantiate
+        stages_with_order.sort(key=lambda x: x[0])
+        stages = [stage_class() for _, stage_class in stages_with_order]
 
         return cls(stages)

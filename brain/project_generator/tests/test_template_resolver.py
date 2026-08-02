@@ -1,8 +1,8 @@
-from brain.project_generator.template_registry import TemplateRegistry
-from brain.project_generator.template_models import TemplateMetadata
-from brain.project_generator.template_resolver import TemplateResolver
 from brain.project_generator.models import ProjectBlueprint
-from brain.architecture.models import Architecture
+from brain.project_generator.template_models import TemplateMetadata
+from brain.project_generator.template_registry import TemplateRegistry
+from brain.project_generator.template_resolver import TemplateResolver
+
 
 def test_template_resolver_dependencies():
     registry = TemplateRegistry()

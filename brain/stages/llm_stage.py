@@ -6,6 +6,7 @@ metadata recording, error handling, and context updates.
 """
 
 from abc import abstractmethod
+from collections.abc import Callable
 from typing import Any
 
 from brain.prompts.loader import load_prompt
@@ -13,13 +14,28 @@ from brain.stages.base import Stage
 from core.exceptions import ProviderError
 from core.logging import get_logger
 from models.project_context import ProjectContext
+from providers.base import AIProvider
 from providers.factory import create_provider
 
 logger = get_logger(__name__)
 
+# Type alias for provider factory function
+ProviderFactory = Callable[[], AIProvider]
+
 
 class LLMStage(Stage):
     """Base class for stages that use an LLM for generation."""
+
+    def __init__(self, provider_factory: ProviderFactory | None = None):
+        """
+        Initialize the LLM stage.
+
+        Args:
+            provider_factory: Optional factory function to create AI providers.
+                             If None, uses the global create_provider() function.
+                             This enables dependency injection for testing.
+        """
+        self._provider_factory = provider_factory or create_provider
 
     @property
     @abstractmethod
@@ -55,8 +71,8 @@ class LLMStage(Stage):
         kwargs = self.get_prompt_kwargs(context)
         prompt = load_prompt(self.prompt_template_name, **kwargs)
 
-        # 2. Get provider
-        provider = create_provider()
+        # 2. Get provider (using injected factory or default)
+        provider = self._provider_factory()
 
         # 3. Start stage (metadata)
         context.start_stage(

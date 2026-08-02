@@ -1,12 +1,16 @@
-from typing import Set, List
-from .assembly_models import AssembledProject, AssemblyValidationResult, ProjectDirectory
+from .assembly_models import (
+    AssembledProject,
+    AssemblyValidationResult,
+    ProjectDirectory,
+)
+
 
 class AssemblyValidator:
     def validate(self, project: AssembledProject) -> AssemblyValidationResult:
         errors = []
         
-        seen_dirs: Set[str] = set()
-        seen_files: Set[str] = set()
+        seen_dirs: set[str] = set()
+        seen_files: set[str] = set()
         
         def validate_dir(d: ProjectDirectory, current_path: str):
             dir_names = set()

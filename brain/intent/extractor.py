@@ -7,9 +7,7 @@ No inference, no guessing, no hallucination.
 
 from __future__ import annotations
 
-from typing import Any
-
-from brain.intent.models import ExtractedFact, ConfidenceScore
+from brain.intent.models import ConfidenceScore, ExtractedFact
 from brain.intent.rules import (
     BUSINESS_GOAL_INDICATORS,
     BUSINESS_MODEL_RULES,

@@ -8,8 +8,6 @@ Every rule is explicit and deterministic.
 
 from __future__ import annotations
 
-from typing import Any
-
 # ---------------------------------------------------------------------------
 # Project type classification rules
 # ---------------------------------------------------------------------------

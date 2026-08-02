@@ -215,9 +215,7 @@ def is_complete(knowledge: dict) -> dict[str, bool]:
         value = knowledge.get(section.name)
         if isinstance(value, str):
             result[section.name] = bool(value.strip())
-        elif isinstance(value, list):
-            result[section.name] = len(value) > 0
-        elif isinstance(value, dict):
+        elif isinstance(value, list) or isinstance(value, dict):
             result[section.name] = len(value) > 0
         else:
             result[section.name] = value is not None

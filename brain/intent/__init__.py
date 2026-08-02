@@ -13,7 +13,7 @@ from brain.intent.engine import IntentEngine
 from brain.intent.models import IntentAnalysis, IntentResult
 
 __all__ = [
-    "IntentEngine",
     "IntentAnalysis",
+    "IntentEngine",
     "IntentResult",
 ]

@@ -1,10 +1,10 @@
-from typing import List, Dict
-from .models import Task
 from .dependency_graph import DependencyGraph
+from .models import Task
+
 
 class Prioritizer:
     @staticmethod
-    def calculate_priorities(tasks: List[Task]) -> None:
+    def calculate_priorities(tasks: list[Task]) -> None:
         """
         Deterministically calculates and assigns priorities for a list of tasks.
         Uses dependency depth: Tasks that have more tasks depending on them get higher priority.

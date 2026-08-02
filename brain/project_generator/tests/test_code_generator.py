@@ -1,6 +1,10 @@
 from brain.project_generator.code_generator import CodeGenerator
 from brain.project_generator.models import ProjectBlueprint
-from brain.project_generator.template_models import ResolvedTemplateSet, TemplateMetadata
+from brain.project_generator.template_models import (
+    ResolvedTemplateSet,
+    TemplateMetadata,
+)
+
 
 def test_code_generator():
     generator = CodeGenerator()

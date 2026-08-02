@@ -1,9 +1,11 @@
-from typing import List, Dict, Optional, Callable
+from collections.abc import Callable
+
 from .template_models import TemplateMetadata
+
 
 class TemplateRegistry:
     def __init__(self):
-        self._templates: Dict[str, TemplateMetadata] = {}
+        self._templates: dict[str, TemplateMetadata] = {}
 
     def register_template(self, template: TemplateMetadata) -> None:
         self._templates[template.id] = template
@@ -12,11 +14,11 @@ class TemplateRegistry:
         if template_id in self._templates:
             del self._templates[template_id]
 
-    def get_template(self, template_id: str) -> Optional[TemplateMetadata]:
+    def get_template(self, template_id: str) -> TemplateMetadata | None:
         return self._templates.get(template_id)
 
-    def list_templates(self) -> List[TemplateMetadata]:
+    def list_templates(self) -> list[TemplateMetadata]:
         return list(self._templates.values())
 
-    def filter_templates(self, predicate: Callable[[TemplateMetadata], bool]) -> List[TemplateMetadata]:
+    def filter_templates(self, predicate: Callable[[TemplateMetadata], bool]) -> list[TemplateMetadata]:
         return [t for t in self._templates.values() if predicate(t)]

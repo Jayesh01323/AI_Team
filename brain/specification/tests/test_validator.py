@@ -1,6 +1,6 @@
-import pytest
-from brain.specification.models import LivingSpecification, Requirement, Decision, EntityStatus
+from brain.specification.models import LivingSpecification, Requirement
 from brain.specification.validator import validate_specification
+
 
 def test_validation_passes_on_valid_spec():
     spec = LivingSpecification(

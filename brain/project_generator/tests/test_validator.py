@@ -1,5 +1,6 @@
-from brain.project_generator.validator import ProjectValidator
 from brain.project_generator.models import GeneratorContext, ProjectBlueprint
+from brain.project_generator.validator import ProjectValidator
+
 
 def test_validator():
     validator = ProjectValidator()

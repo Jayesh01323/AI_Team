@@ -1,6 +1,8 @@
 import pytest
+
 from brain.architecture.component_graph import ComponentGraph
 from brain.architecture.models import Component, Dependency
+
 
 def test_component_graph_no_cycle():
     graph = ComponentGraph()

@@ -1,8 +1,10 @@
-from typing import Dict, Any
+from typing import Any
+
 from .assembly_models import AssembledProject
 
+
 class AssemblyExporter:
-    def export_dict(self, project: AssembledProject) -> Dict[str, Any]:
+    def export_dict(self, project: AssembledProject) -> dict[str, Any]:
         return project.export_dict()
         
     def export_json(self, project: AssembledProject) -> str:

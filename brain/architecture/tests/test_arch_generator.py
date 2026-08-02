@@ -1,7 +1,7 @@
-import pytest
 from brain.architecture.generator import ArchitectureGenerator
+from brain.planner.models import Epic, Feature, Milestone, Plan, Task
 from brain.specification.models import LivingSpecification, Requirement
-from brain.planner.models import Plan, Milestone, Epic, Feature, Task
+
 
 def test_generate_architecture():
     spec = LivingSpecification(

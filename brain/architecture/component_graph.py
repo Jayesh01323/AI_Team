@@ -1,11 +1,12 @@
-from typing import List, Dict, Set
 from collections import defaultdict
+
 from .models import Component, Dependency
+
 
 class ComponentGraph:
     def __init__(self):
-        self.adj: Dict[str, List[str]] = defaultdict(list)
-        self.nodes: Dict[str, Component] = {}
+        self.adj: dict[str, list[str]] = defaultdict(list)
+        self.nodes: dict[str, Component] = {}
 
     def add_component(self, comp: Component):
         self.nodes[comp.id] = comp
@@ -18,7 +19,7 @@ class ComponentGraph:
         else:
             raise ValueError(f"Unknown components in dependency: {dep.source_id} -> {dep.target_id}")
 
-    def build_from_architecture(self, components: List[Component], dependencies: List[Dependency]):
+    def build_from_architecture(self, components: list[Component], dependencies: list[Dependency]):
         for comp in components:
             self.add_component(comp)
         for dep in dependencies:
@@ -47,10 +48,10 @@ class ComponentGraph:
                     return True
         return False
 
-    def get_dependencies(self, comp_id: str) -> List[str]:
+    def get_dependencies(self, comp_id: str) -> list[str]:
         return self.adj.get(comp_id, [])
 
-    def get_dependents(self, comp_id: str) -> List[str]:
+    def get_dependents(self, comp_id: str) -> list[str]:
         dependents = []
         for src, targets in self.adj.items():
             if comp_id in targets:

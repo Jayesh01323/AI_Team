@@ -1,11 +1,12 @@
-from typing import List
-from .models import Task, TaskStatus
+
 from .dependency_graph import DependencyGraph
+from .models import Task, TaskStatus
 from .prioritizer import Prioritizer
+
 
 class Scheduler:
     @staticmethod
-    def schedule(tasks: List[Task]) -> List[Task]:
+    def schedule(tasks: list[Task]) -> list[Task]:
         """
         Assigns execution order to tasks based on topological sorting.
         Also calculates priorities.
@@ -46,9 +47,7 @@ class Scheduler:
             
             if is_blocked:
                 task.status = TaskStatus.BLOCKED
-            elif task.status == TaskStatus.BLOCKED:
-                task.status = TaskStatus.READY
-            elif task.status == TaskStatus.BACKLOG:
+            elif task.status == TaskStatus.BLOCKED or task.status == TaskStatus.BACKLOG:
                 task.status = TaskStatus.READY
                 
         return sorted(tasks, key=lambda x: x.execution_order)

@@ -1,19 +1,33 @@
-from typing import Dict, Any, List, Optional
-from brain.specification.models import LivingSpecification
-from brain.planner.models import Plan
-from .models import Architecture
-from .mapper import ArchitectureMapper
-from .validator import ArchitectureValidator, ValidationResult
-from .component_graph import ComponentGraph
-from .exporter import ArchitectureExporter
+"""
+Architecture Generator — Deterministic architecture design.
 
-# Legacy imports
+This module provides the ArchitectureGenerator for creating architectures
+from Living Specifications. It is part of the DETERMINISTIC GENERATION
+system, separate from the LLM-powered legacy stage system.
+
+ARCHITECTURE BOUNDARY:
+  - ArchitectureGenerator: Deterministic, no LLM calls
+  - ArchitectureGeneratorStage (below): Legacy LLM-based stage (creates empty placeholder)
+"""
+
+from typing import Any
+
+from brain.planner.models import Plan
+from brain.specification.models import LivingSpecification
+
+# Legacy imports (only for ArchitectureGeneratorStage below)
 from brain.stages.base import Stage
 from core.logging import get_logger
-from models.project_context import ProjectContext
 from models.architecture import Architecture as LegacyArchitecture
+from models.project_context import ProjectContext
 from pipeline.artifacts import ArtifactManager
 from pipeline.registry import register_stage
+
+from .component_graph import ComponentGraph
+from .exporter import ArchitectureExporter
+from .mapper import ArchitectureMapper
+from .models import Architecture
+from .validator import ArchitectureValidator, ValidationResult
 
 logger = get_logger(__name__)
 
@@ -21,7 +35,7 @@ class ArchitectureGenerator:
     """The deterministic Architecture Generator."""
     
     @staticmethod
-    def generate_architecture(spec: LivingSpecification, plan: Plan, knowledge_data: Optional[Dict[str, Any]] = None, decision_data: Optional[Dict[str, Any]] = None) -> Architecture:
+    def generate_architecture(spec: LivingSpecification, plan: Plan, knowledge_data: dict[str, Any] | None = None, decision_data: dict[str, Any] | None = None) -> Architecture:
         arch = Architecture(project_name=spec.project_name)
         
         # 1. Map requirements to components
@@ -59,7 +73,7 @@ class ArchitectureGenerator:
         return ArchitectureExporter.to_json(arch, indent)
         
     @staticmethod
-    def export_dict(arch: Architecture) -> Dict[str, Any]:
+    def export_dict(arch: Architecture) -> dict[str, Any]:
         return ArchitectureExporter.to_dict(arch)
         
     @staticmethod
@@ -67,7 +81,7 @@ class ArchitectureGenerator:
         return ArchitectureExporter.summary(arch)
         
     @staticmethod
-    def statistics(arch: Architecture) -> Dict[str, int]:
+    def statistics(arch: Architecture) -> dict[str, int]:
         return ArchitectureExporter.statistics(arch)
 
 
@@ -89,9 +103,6 @@ class ArchitectureGeneratorStage(Stage):
             raise ValueError("No project_specification in context. Run ProjectSpecificationGeneratorStage first.")
 
         spec = context.project_specification
-        idea = spec.idea
-        req = spec.requirements
-        prd = spec.prd
 
         arch = LegacyArchitecture(
             system_overview="Legacy Generated Architecture",

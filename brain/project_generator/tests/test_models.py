@@ -1,4 +1,10 @@
-from brain.project_generator.models import GeneratedFile, ProjectBlueprint, GeneratorContext, ValidationResult
+from brain.project_generator.models import (
+    GeneratedFile,
+    GeneratorContext,
+    ProjectBlueprint,
+    ValidationResult,
+)
+
 
 def test_generated_file_creation():
     gf = GeneratedFile(path="main.py", content="print('hello')", is_executable=True)

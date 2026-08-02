@@ -9,7 +9,10 @@ Confidence → Question Generation → ProjectKnowledge Update
 from __future__ import annotations
 
 from brain.intent.classifier import classify_all
-from brain.intent.confidence import calculate_overall_confidence, calculate_section_confidence
+from brain.intent.confidence import (
+    calculate_overall_confidence,
+    calculate_section_confidence,
+)
 from brain.intent.extractor import extract_all_facts
 from brain.intent.gap_detector import detect_gaps
 from brain.intent.models import (
@@ -19,8 +22,8 @@ from brain.intent.models import (
     IntentResult,
     SectionConfidence,
 )
-from brain.knowledge import ProjectKnowledge
 from brain.intent.question_generator import generate_questions
+from brain.knowledge import ProjectKnowledge
 
 
 class IntentEngine:

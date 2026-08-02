@@ -1,15 +1,15 @@
-from .models import Task, TaskStatus, Subtask, Feature, Epic, Milestone, Plan
+from .models import Epic, Feature, Milestone, Plan, Subtask, Task, TaskStatus
 from .planner import Planner
 from .validator import ValidationResult
 
 __all__ = [
-    "Task",
-    "TaskStatus",
-    "Subtask",
-    "Feature",
     "Epic",
+    "Feature",
     "Milestone",
     "Plan",
     "Planner",
+    "Subtask",
+    "Task",
+    "TaskStatus",
     "ValidationResult"
 ]

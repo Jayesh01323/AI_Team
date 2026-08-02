@@ -1,6 +1,6 @@
-import pytest
-from brain.planner.scheduler import Scheduler
 from brain.planner.models import Task, TaskStatus
+from brain.planner.scheduler import Scheduler
+
 
 def test_scheduler_assigns_execution_order():
     t1 = Task(id="T1", title="T1")

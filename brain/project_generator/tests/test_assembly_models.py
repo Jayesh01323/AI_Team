@@ -1,4 +1,10 @@
-from brain.project_generator.assembly_models import ProjectDirectory, ProjectFile, AssembledProject, AssemblySummary, AssemblyStatistics, AssemblyValidationResult
+from brain.project_generator.assembly_models import (
+    AssembledProject,
+    AssemblyValidationResult,
+    ProjectDirectory,
+    ProjectFile,
+)
+
 
 def test_project_directory_rebuild():
     d = ProjectDirectory(name="root")

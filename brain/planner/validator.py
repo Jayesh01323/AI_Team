@@ -1,12 +1,14 @@
-from typing import Dict, Any, List
-from .models import Plan, Task
+from typing import Any
+
 from .dependency_graph import DependencyGraph
+from .models import Plan
+
 
 class ValidationResult:
     def __init__(self):
         self.is_valid: bool = True
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def add_error(self, message: str):
         self.is_valid = False
@@ -15,7 +17,7 @@ class ValidationResult:
     def add_warning(self, message: str):
         self.warnings.append(message)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "is_valid": self.is_valid,
             "errors": self.errors,
@@ -49,7 +51,7 @@ class PlanValidator:
         try:
             graph.build_from_tasks(tasks)
         except Exception as e:
-            result.add_error(f"Failed to build dependency graph: {str(e)}")
+            result.add_error(f"Failed to build dependency graph: {e!s}")
             
         if graph.has_cycle():
             result.add_error("Dependency cycle detected in plan")

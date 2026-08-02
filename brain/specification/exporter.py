@@ -1,8 +1,10 @@
 import json
-from typing import Dict, Any
+from typing import Any
+
 from .models import LivingSpecification
 
-def export_to_dict(spec: LivingSpecification) -> Dict[str, Any]:
+
+def export_to_dict(spec: LivingSpecification) -> dict[str, Any]:
     # Using pydantic's dict export, converting datetimes properly
     return spec.model_dump(mode='json')
 
@@ -22,7 +24,7 @@ def generate_summary(spec: LivingSpecification) -> str:
     ]
     return "\n".join(summary_lines)
 
-def generate_statistics(spec: LivingSpecification) -> Dict[str, int]:
+def generate_statistics(spec: LivingSpecification) -> dict[str, int]:
     return {
         "goals_count": len(spec.goals),
         "success_criteria_count": len(spec.success_criteria),
