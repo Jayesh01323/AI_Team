@@ -37,7 +37,19 @@ def create_provider() -> AIProvider:
 
         return GeminiProvider()
 
+    if AI_PROVIDER == "nvidia":
+        from providers.nvidia import NvidiaProvider
+
+        return NvidiaProvider()
+
+    if AI_PROVIDER == "auto":
+        from providers.auto import AutoProvider
+
+        return AutoProvider()
+
     raise ConfigurationError(
         f"Unknown AI_PROVIDER: '{AI_PROVIDER}'. "
-        f"Expected one of: openai, anthropic, gemini."
+        f"Expected one of: openai, anthropic, gemini, nvidia, auto."
     )
+
+

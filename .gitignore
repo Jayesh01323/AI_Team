@@ -22,3 +22,17 @@ projects/.workspaces/
 
 # Runtime project state (timestamps only, not stable fixtures)
 projects/*/context.json
+
+# Generated test projects
+projects/a-saas-platform-for-analyzing-resumes/
+projects/ai-resume-analyzer/
+projects/build-an-ai-resume-analyzer/
+projects/qa-test-repository-generator/
+projects/test-qa-project/
+
+# Test evidence and research zips
+qa_evidence/
+qa_evidence.zip
+MetaGPT_Analysis.zip
+MetaGPT_Analysis/
+

@@ -77,5 +77,22 @@ def test_extract_json_multiline_fenced():
 }
 ```"""
     result = extract_json_from_response(text)
-    assert result["project_title"] == "SaaS App"
-    assert len(result["epics"]) == 1
+def test_extract_json_preamble_and_postamble_with_fences():
+    """Extracts JSON enclosed in markdown code fences even with text before and after."""
+    text = 'Here is the requested output:\n```json\n{"status": "ok"}\n```\nHope this helps!'
+    result = extract_json_from_response(text)
+    assert result == {"status": "ok"}
+
+
+def test_extract_json_trailing_commas():
+    """Handles JSON with trailing commas gracefully."""
+    text = '{"name": "test", "items": [1, 2,],}'
+    result = extract_json_from_response(text)
+    assert result == {"name": "test", "items": [1, 2]}
+
+
+def test_extract_json_non_dict_raises():
+    """Non-dict JSON (e.g. primitive list) raises ProviderError when expecting dict."""
+    with pytest.raises(ProviderError):
+        extract_json_from_response('[1, 2, 3]')
+

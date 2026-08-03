@@ -26,7 +26,13 @@ ProviderFactory = Callable[[], AIProvider]
 class LLMStage(Stage):
     """Base class for stages that use an LLM for generation."""
 
-    def __init__(self, provider_factory: ProviderFactory | None = None):
+    max_tokens: int = 8192
+
+    def __init__(
+        self,
+        provider_factory: ProviderFactory | None = None,
+        max_tokens: int | None = None,
+    ):
         """
         Initialize the LLM stage.
 
@@ -34,8 +40,11 @@ class LLMStage(Stage):
             provider_factory: Optional factory function to create AI providers.
                              If None, uses the global create_provider() function.
                              This enables dependency injection for testing.
+            max_tokens: Maximum tokens in the response. If None, defaults to self.max_tokens (8192).
         """
         self._provider_factory = provider_factory or create_provider
+        if max_tokens is not None:
+            self.max_tokens = max_tokens
 
     @property
     @abstractmethod
@@ -84,7 +93,7 @@ class LLMStage(Stage):
         try:
             # 4. Generate
             logger.debug(f"Stage '{self.name}' sending prompt to {provider.name()}")
-            result = provider.generate(prompt, max_tokens=2048)
+            result = provider.generate(prompt, max_tokens=self.max_tokens)
 
             # 5. Parse response
             parsed_output = self.parse_response(result.text, context)
@@ -104,3 +113,4 @@ class LLMStage(Stage):
             logger.error(f"LLMStage '{self.name}' failed: {e!s}")
             context.fail_stage(self.name, str(e))
             raise ProviderError(f"Stage '{self.name}' failed: {e!s}") from e
+

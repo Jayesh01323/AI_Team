@@ -3,10 +3,24 @@ Centralized configuration management.
 
 All environment-variable loading happens here.
 Providers and other modules read config from this module.
+
+Secrets (API keys) are loaded from a local .env file (never committed to git)
+OR from system environment variables. .env takes precedence for local dev.
 """
 
 import os
 from pathlib import Path
+
+# ── Load .env file (local secrets, never committed) ────────────────────────
+# Loads variables from .env into os.environ ONLY IF not already set,
+# so system environment variables take precedence over .env values.
+try:
+    from dotenv import load_dotenv
+
+    _ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
+    load_dotenv(_ENV_PATH, override=False)
+except ImportError:  # pragma: no cover - dotenv is a dependency
+    pass
 
 # ── Project Paths ──────────────────────────────────────────────────────────
 
@@ -16,7 +30,7 @@ PROJECTS_DIR = ROOT_DIR / "projects"
 
 # ── AI Provider Configuration ──────────────────────────────────────────────
 
-# Which provider to use: "openai", "anthropic", "gemini"
+# Which provider to use: "openai", "anthropic", "gemini", "nvidia", "auto"
 AI_PROVIDER: str = os.getenv("AI_PROVIDER", "openai").lower().strip()
 
 # OpenAI
@@ -33,6 +47,10 @@ ANTHROPIC_MAX_TOKENS: int = int(os.getenv("ANTHROPIC_MAX_TOKENS", "4096"))
 # Gemini
 GEMINI_API_KEY: str | None = os.getenv("GEMINI_API_KEY")
 GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
+
+# NVIDIA
+NVIDIA_API_KEY: str | None = os.getenv("NVIDIA_API_KEY")
+NVIDIA_MODEL: str = os.getenv("NVIDIA_MODEL", "meta/llama-3.1-70b-instruct")
 
 
 # ── Logging Configuration ──────────────────────────────────────────────────
@@ -51,10 +69,10 @@ def validate() -> list[str]:
     """Validate configuration and return a list of issues (empty if valid)."""
     issues: list[str] = []
 
-    if AI_PROVIDER not in ("openai", "anthropic", "gemini"):
+    if AI_PROVIDER not in ("openai", "anthropic", "gemini", "nvidia", "auto"):
         issues.append(
             f"AI_PROVIDER='{AI_PROVIDER}' is not supported. "
-            f"Use 'openai', 'anthropic', or 'gemini'."
+            f"Use 'openai', 'anthropic', 'gemini', 'nvidia', or 'auto'."
         )
 
     if AI_PROVIDER == "openai" and not OPENAI_API_KEY:
@@ -66,4 +84,12 @@ def validate() -> list[str]:
     if AI_PROVIDER == "gemini" and not GEMINI_API_KEY:
         issues.append("GEMINI_API_KEY is not set.")
 
+    if AI_PROVIDER == "nvidia" and not NVIDIA_API_KEY:
+        issues.append("NVIDIA_API_KEY is not set.")
+
+    if AI_PROVIDER == "auto" and not GEMINI_API_KEY and not NVIDIA_API_KEY:
+        issues.append("Neither GEMINI_API_KEY nor NVIDIA_API_KEY is set for auto mode.")
+
     return issues
+
+
