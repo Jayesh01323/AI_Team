@@ -38,7 +38,7 @@ ARCHITECTURE.md defines HOW.
                            │
       ┌────────────────────┼────────────────────┐
       ▼                    ▼                    ▼
-    OpenHands          LangGraph           MetaGPT
+    OpenHands          LangGraph
                            │
                            ▼
                   Generated Project
@@ -569,7 +569,7 @@ OpenHands
 
 LangGraph
 
-MetaGPT
+
 
 GitHub
 

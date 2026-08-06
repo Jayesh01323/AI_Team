@@ -210,7 +210,7 @@ LangGraph
 
 Engineering Organization
 
-MetaGPT
+
 
 ---
 
@@ -240,7 +240,7 @@ OpenHands
 
 Engineering
 
-MetaGPT
+
 
 Models
 

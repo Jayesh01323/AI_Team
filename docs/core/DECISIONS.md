@@ -94,7 +94,7 @@ Decision
 
 Engineering Organization
 
-MetaGPT
+
 
 Reason
 

@@ -80,7 +80,7 @@ Date: 2026-07-26
 - State management
 - Agent coordination
 
-### MetaGPT Concepts
+
 - Engineering role definitions
 - Agent communication patterns
 
@@ -576,7 +576,7 @@ This plan maintains the core architecture from ARCHITECTURE.md while simplifying
 - Project DNA concept (decision tracking, context preservation)
 - Quality gates (simplified: build + tests)
 - LangGraph integration path (workflow engine)
-- MetaGPT concepts (engineering role definitions)
+
 
 **Simplified for MVP**:
 - CLI-first instead of web-first (dashboard deferred)
