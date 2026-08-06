@@ -57,9 +57,12 @@ class ExecutionResult:
     error_log: str | None = None
     exit_code: int = 0
 
-    # New fields for Milestone 3
+    # New fields for Milestone 3 & 6
     success: bool = True
     files_changed: list[str] = field(default_factory=list)
+    added_files: list[str] = field(default_factory=list)
+    modified_files: list[str] = field(default_factory=list)
+    deleted_files: list[str] = field(default_factory=list)
     commands_executed: list[str] = field(default_factory=list)
     validation: str = "PENDING"
     metrics: dict[str, Any] = field(default_factory=dict)
@@ -92,10 +95,14 @@ class ExecutionReport:
     status: str
     timing: float
     files_changed: list[str] = field(default_factory=list)
+    added_files: list[str] = field(default_factory=list)
+    modified_files: list[str] = field(default_factory=list)
+    deleted_files: list[str] = field(default_factory=list)
     commands_executed: list[str] = field(default_factory=list)
     validation_status: str = "PENDING"
     errors: list[str] = field(default_factory=list)
     correlation_id: str | None = None
+
 
 
 @dataclass

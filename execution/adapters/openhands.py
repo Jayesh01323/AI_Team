@@ -17,6 +17,7 @@ from core.exceptions import (
     ProviderRateLimitError,
 )
 from execution.adapters.scaffold import ProviderScaffoldAdapter
+from execution.diff_tracker import WorkspaceDiffTracker
 from models.execution import ExecutionResult, HealthCheckResult
 
 
@@ -147,6 +148,9 @@ class OpenHandsAdapter(ProviderScaffoldAdapter):
 
         self._log_provider_activity(f"Starting task execution: {instruction[:100]}")
 
+        diff_tracker = WorkspaceDiffTracker(self.project_dir)
+        initial_snapshot = diff_tracker.take_snapshot()
+
         # Validate configuration and map provider errors if present
         try:
             self._validate_configuration()
@@ -183,14 +187,8 @@ class OpenHandsAdapter(ProviderScaffoldAdapter):
                 f"Task contract written and validated (v{contract.get('schema_version')}) at {self.task_contract_path}"
             )
 
-        # Scan modified files in workspace
-        files_modified = []
-        if self.project_dir.exists():
-            for p in self.project_dir.rglob("*"):
-                if p.is_file() and ".ai" not in p.parts:
-                    files_modified.append(
-                        str(p.relative_to(self.project_dir)).replace("\\", "/")
-                    )
+        # Compute workspace diff using WorkspaceDiffTracker
+        diff_result = diff_tracker.diff_from_snapshot(initial_snapshot)
 
         self._end_time = time.time()
         duration = self._end_time - self._start_time
@@ -214,15 +212,19 @@ class OpenHandsAdapter(ProviderScaffoldAdapter):
         return ExecutionResult(
             task_id=contract["task_id"],
             status="SUCCESS",
-            files_modified=files_modified,
+            files_modified=diff_result.modified_files,
+            added_files=diff_result.added_files,
+            modified_files=diff_result.modified_files,
+            deleted_files=diff_result.deleted_files,
             agent_trajectory_summary=summary,
             error_log=None,
             exit_code=0,
             success=True,
-            files_changed=files_modified,
+            files_changed=diff_result.files_changed,
             commands_executed=["openhands run"],
             validation="SUCCESS",
             metrics={"duration": duration, "model": contract["model"]},
             errors=[],
             correlation_id=correlation_id,
         )
+

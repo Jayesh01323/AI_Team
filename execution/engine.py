@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 from core.exceptions import ProviderConfigurationError
 from core.logging import get_logger
 from execution.adapters.factory import AdapterFactory, ProviderRegistry
+from execution.diff_tracker import WorkspaceDiffTracker
 from execution.validation.pipeline import ValidationEngine
 from execution.workspace import WorkspaceManager
 from models.execution import (
@@ -142,9 +143,16 @@ class ExecutionEngine:
                     f"\nAcceptance Criteria: {'; '.join(task.acceptance_criteria)}"
                 )
 
+            # Snapshot initial workspace state before execution
+            diff_tracker = WorkspaceDiffTracker(workspace_path)
+            initial_snapshot = diff_tracker.take_snapshot()
+
             # Dispatch execution to the adapter
             adapter_result = adapter.execute(instruction)
             job.logs.append("Adapter execution completed.")
+
+            # Compute workspace diff post execution
+            diff_result = diff_tracker.diff_from_snapshot(initial_snapshot)
 
             # 4. Collect results & validation
             job.status = ExecutionState.VALIDATING
@@ -161,17 +169,55 @@ class ExecutionEngine:
                 if not r.success:
                     validation_errors.extend(r.errors)
 
+            # Derive added/modified/deleted/changed files safely (supporting legacy adapters and test mocks)
+            raw_added = getattr(adapter_result, "added_files", None)
+            added_files = (
+                raw_added
+                if isinstance(raw_added, list) and raw_added
+                else diff_result.added_files
+            )
+
+            raw_modified = getattr(adapter_result, "modified_files", None)
+            raw_files_modified = getattr(adapter_result, "files_modified", None)
+            if isinstance(raw_modified, list) and raw_modified:
+                modified_files = raw_modified
+            elif isinstance(raw_files_modified, list) and raw_files_modified:
+                modified_files = raw_files_modified
+            else:
+                modified_files = diff_result.modified_files
+
+            raw_deleted = getattr(adapter_result, "deleted_files", None)
+            deleted_files = (
+                raw_deleted
+                if isinstance(raw_deleted, list) and raw_deleted
+                else diff_result.deleted_files
+            )
+
+            raw_changed = getattr(adapter_result, "files_changed", None)
+            if isinstance(raw_changed, list) and raw_changed:
+                files_changed = raw_changed
+            elif diff_result.files_changed:
+                files_changed = diff_result.files_changed
+            else:
+                files_changed = sorted(set(added_files + modified_files))
+
+
+
+
             # Construct ExecutionResult
             success = adapter_result.exit_code == 0 and validation_success
             result = ExecutionResult(
                 task_id=task.id,
                 status=adapter_result.status,
-                files_modified=adapter_result.files_modified,
+                files_modified=modified_files,
+                added_files=added_files,
+                modified_files=modified_files,
+                deleted_files=deleted_files,
                 agent_trajectory_summary=adapter_result.agent_trajectory_summary,
                 error_log=adapter_result.error_log,
                 exit_code=adapter_result.exit_code,
                 success=success,
-                files_changed=adapter_result.files_modified,
+                files_changed=files_changed,
                 commands_executed=[],
                 validation="SUCCESS" if validation_success else "FAILED",
                 metrics=collected_metrics,
@@ -179,6 +225,7 @@ class ExecutionEngine:
                 + ([adapter_result.error_log] if adapter_result.error_log else []),
                 correlation_id=adapter_result.correlation_id or correlation_id,
             )
+
             job.result = result
             job.validation_status = result.validation
 
@@ -209,10 +256,14 @@ class ExecutionEngine:
             status=job.status.value,
             timing=duration,
             files_changed=result.files_changed,
+            added_files=result.added_files,
+            modified_files=result.modified_files,
+            deleted_files=result.deleted_files,
             commands_executed=result.commands_executed,
             validation_status=result.validation,
             errors=result.errors,
             correlation_id=correlation_id,
         )
+
 
         return report
