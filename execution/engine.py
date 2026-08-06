@@ -6,6 +6,11 @@ from core.exceptions import ProviderConfigurationError
 from core.logging import get_logger
 from execution.adapters.factory import AdapterFactory, ProviderRegistry
 from execution.diff_tracker import WorkspaceDiffTracker
+from execution.recovery.self_healing import (
+    RecoveryAttempt,
+    RecoveryDecision,
+    SelfHealingEngine,
+)
 from execution.validation.parallel import ParallelValidationEngine
 from execution.validation.pipeline import ValidationEngine
 from execution.workspace import WorkspaceManager
@@ -29,9 +34,12 @@ class ExecutionEngine:
         self,
         workspace_manager: WorkspaceManager | None = None,
         validation_engine: ValidationEngine | None = None,
+        self_healing_engine: SelfHealingEngine | None = None,
     ):
         self.workspace_manager = workspace_manager or WorkspaceManager()
         self.validation_engine = validation_engine or ParallelValidationEngine()
+        self.self_healing_engine = self_healing_engine
+
 
 
     def check_provider_health(
@@ -46,7 +54,9 @@ class ExecutionEngine:
         task: ExecutionTask,
         context: ExecutionContext,
         run_health_check: bool = False,
+        max_retries: int | None = None,
     ) -> ExecutionReport:
+
         """Executes a task end-to-end and returns an ExecutionReport."""
         # 1. Validate inputs
         if not task.id or not task.title or not task.description:
@@ -145,26 +155,78 @@ class ExecutionEngine:
                     f"\nAcceptance Criteria: {'; '.join(task.acceptance_criteria)}"
                 )
 
-            # Snapshot initial workspace state before execution
-            diff_tracker = WorkspaceDiffTracker(workspace_path)
-            initial_snapshot = diff_tracker.take_snapshot()
+            # Resolve effective SelfHealingEngine
+            if self.self_healing_engine is not None:
+                healing_engine = self.self_healing_engine
+            elif max_retries is not None and max_retries > 0:
+                healing_engine = SelfHealingEngine(max_retries=max_retries)
+            else:
+                healing_engine = SelfHealingEngine(max_retries=0)
 
-            # Dispatch execution to the adapter
-            adapter_result = adapter.execute(instruction)
-            job.logs.append("Adapter execution completed.")
+            current_attempt = 1
+            recovery_history: list[RecoveryAttempt] = []
+            final_decision: RecoveryDecision | None = None
 
-            # Compute workspace diff post execution
-            diff_result = diff_tracker.diff_from_snapshot(initial_snapshot)
+            while True:
+                diff_tracker = WorkspaceDiffTracker(workspace_path)
+                initial_snapshot = diff_tracker.take_snapshot()
 
-            # 4. Collect results & validation
-            job.status = ExecutionState.VALIDATING
-            job.logs.append("Collecting adapter results...")
-            collected_metrics = adapter.collect_results() or {}
+                adapter_exception: Exception | None = None
+                adapter_result: ExecutionResult | None = None
 
-            job.logs.append("Running validation pipeline...")
-            validation_results = self.validation_engine.validate(
-                workspace_path, correlation_id=correlation_id
-            )
+                try:
+                    job.status = ExecutionState.EXECUTING
+                    adapter_result = adapter.execute(instruction)
+                    job.logs.append(
+                        f"Adapter execution turn {current_attempt} completed."
+                    )
+                except Exception as e:  # noqa: BLE001
+                    adapter_exception = e
+                    job.logs.append(f"Adapter execution failed with exception: {e}")
+
+                diff_result = diff_tracker.diff_from_snapshot(initial_snapshot)
+
+                if adapter_exception is None:
+                    job.status = ExecutionState.VALIDATING
+                    job.logs.append("Collecting adapter results...")
+                    collected_metrics = adapter.collect_results() or {}
+
+                    job.logs.append("Running validation pipeline...")
+                    validation_results = self.validation_engine.validate(
+                        workspace_path, correlation_id=correlation_id
+                    )
+                else:
+                    collected_metrics = {}
+                    validation_results = []
+
+                # Evaluate self-healing recovery decision
+                decision = healing_engine.evaluate_recovery(
+                    original_instruction=instruction,
+                    adapter_result=adapter_result,
+                    validation_results=validation_results,
+                    current_attempt=current_attempt,
+                    exception=adapter_exception,
+                    history=recovery_history,
+                )
+                final_decision = decision
+                recovery_history = decision.history
+
+                if decision.should_retry and decision.remediation_prompt:
+                    job.retries += 1
+                    job.logs.append(
+                        f"Self-healing triggering retry ({current_attempt}/{healing_engine.max_retries}): {decision.reason}"
+                    )
+                    instruction = decision.remediation_prompt
+                    current_attempt = decision.attempt
+                    continue
+
+                if adapter_exception is not None:
+                    raise adapter_exception
+
+                break
+
+            assert adapter_result is not None
+
             validation_success = all(r.success for r in validation_results)
             validation_errors = []
             for r in validation_results:
@@ -203,9 +265,6 @@ class ExecutionEngine:
             else:
                 files_changed = sorted(set(added_files + modified_files))
 
-
-
-
             # Construct ExecutionResult
             success = adapter_result.exit_code == 0 and validation_success
             result = ExecutionResult(
@@ -226,6 +285,8 @@ class ExecutionEngine:
                 errors=validation_errors
                 + ([adapter_result.error_log] if adapter_result.error_log else []),
                 correlation_id=adapter_result.correlation_id or correlation_id,
+                retries=job.retries,
+                recovery_metadata=final_decision.to_dict() if final_decision else {},
             )
 
             job.result = result
@@ -234,6 +295,7 @@ class ExecutionEngine:
             job.status = ExecutionState.COMPLETED
             job.completed_at = datetime.now(UTC)
             job.logs.append("Job execution completed successfully.")
+
 
         except Exception as e:
             job.status = ExecutionState.FAILED
@@ -265,7 +327,10 @@ class ExecutionEngine:
             validation_status=result.validation,
             errors=result.errors,
             correlation_id=correlation_id,
+            retries=result.retries,
+            recovery_metadata=result.recovery_metadata,
         )
+
 
 
         return report

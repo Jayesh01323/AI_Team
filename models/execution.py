@@ -68,6 +68,8 @@ class ExecutionResult:
     metrics: dict[str, Any] = field(default_factory=dict)
     errors: list[str] = field(default_factory=list)
     correlation_id: str | None = None
+    retries: int = 0
+    recovery_metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -102,6 +104,9 @@ class ExecutionReport:
     validation_status: str = "PENDING"
     errors: list[str] = field(default_factory=list)
     correlation_id: str | None = None
+    retries: int = 0
+    recovery_metadata: dict[str, Any] = field(default_factory=dict)
+
 
 
 
