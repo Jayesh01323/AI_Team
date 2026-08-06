@@ -11,7 +11,7 @@ class FileSystem:
     def _validate_path(self, path: str | Path) -> Path:
         """Ensures the path is within the root_dir to prevent directory traversal attacks."""
         target_path = (self.root_dir / path).resolve()
-        if os.path.commonpath([str(target_path), str(self.root_dir)]) != str(self.root_dir):
+        if not target_path.is_relative_to(self.root_dir):
             raise ValueError(
                 f"Path {path} is outside the repository root {self.root_dir}"
             )
