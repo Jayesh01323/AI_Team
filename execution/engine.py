@@ -6,6 +6,7 @@ from core.exceptions import ProviderConfigurationError
 from core.logging import get_logger
 from execution.adapters.factory import AdapterFactory, ProviderRegistry
 from execution.diff_tracker import WorkspaceDiffTracker
+from execution.validation.parallel import ParallelValidationEngine
 from execution.validation.pipeline import ValidationEngine
 from execution.workspace import WorkspaceManager
 from models.execution import (
@@ -30,7 +31,8 @@ class ExecutionEngine:
         validation_engine: ValidationEngine | None = None,
     ):
         self.workspace_manager = workspace_manager or WorkspaceManager()
-        self.validation_engine = validation_engine or ValidationEngine()
+        self.validation_engine = validation_engine or ParallelValidationEngine()
+
 
     def check_provider_health(
         self, provider: str, config: AdapterConfiguration | None = None

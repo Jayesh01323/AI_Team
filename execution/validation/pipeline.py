@@ -189,3 +189,11 @@ class ValidationEngine:
                     )
                 )
         return results
+
+
+# Lazy import helper for ParallelValidationEngine to prevent circular dependency
+def get_parallel_validation_engine() -> type[ValidationEngine]:
+    from execution.validation.parallel import ParallelValidationEngine
+
+    return ParallelValidationEngine
+
