@@ -339,5 +339,110 @@ def scaffold(idea: str):
         raise SystemExit(1) from exc
 
 
+@cli.command()
+@click.argument("idea", required=False)
+@click.option("--project-name", "-p", default=None, help="Custom project name.")
+@click.option("--provider", default="openhands", help="Execution provider adapter.")
+@click.option("--max-retries", default=3, type=int, help="Self-healing retry budget.")
+@click.option("--json", "json_output", is_flag=True, help="Output raw telemetry JSON.")
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging.")
+def run(
+    idea: str | None,
+    project_name: str | None,
+    provider: str,
+    max_retries: int,
+    json_output: bool,
+    verbose: bool,
+) -> None:
+    """
+    Run the end-to-end autonomous software engineering pipeline.
+
+    Coordinates:
+      Engineering Brain -> Execution Engine -> Workspace Diff Engine ->
+      Parallel Validation Engine -> Self-Healing Engine -> Telemetry Report.
+    """
+    if not idea or not idea.strip():
+        click.echo("ERROR: Project idea cannot be empty.")
+        raise SystemExit(1)
+
+    name = project_name or sanitize_project_name(idea)
+
+    if not json_output:
+        click.echo("")
+        click.echo("=== Running Autonomous AI Engineering Pipeline ===")
+        click.echo("")
+        click.echo(f'Project:  "{name}"')
+        click.echo(f'Provider: "{provider}"')
+        click.echo(f'Idea:     "{idea}"')
+        click.echo("")
+
+    from pipeline.autonomous import AutonomousOrchestrator, AutonomousState
+
+    try:
+        orchestrator = AutonomousOrchestrator()
+        report = orchestrator.execute_workflow(
+            raw_idea=idea,
+            project_name=name,
+            provider=provider,
+            max_retries=max_retries,
+        )
+
+        total_retries = sum(r.retries for r in report.task_reports)
+        validation_passed = (
+            all(r.validation_status == "SUCCESS" for r in report.task_reports)
+            if report.task_reports
+            else True
+        )
+
+        if json_output:
+            click.echo(json.dumps(report.to_dict(), indent=2))
+        else:
+            click.echo("--------------------------------------------------")
+            click.echo("AUTONOMOUS EXECUTION SUMMARY")
+            click.echo("--------------------------------------------------")
+            click.echo("Stage Progress:")
+            for s in report.stages:
+                mark = "✓" if s.status == "COMPLETED" else "✗"
+                click.echo(f"  {mark} {s.stage_name} ({s.to_dict()['duration']}s)")
+
+            click.echo("")
+            click.echo("Execution Metrics:")
+            click.echo(f"  Status:           {report.status.value}")
+            click.echo(f"  Execution Time:   {report.timing:.2f}s")
+            click.echo(
+                f"  Files Changed:    {len(report.files_changed)} {report.files_changed}"
+            )
+            click.echo(f"  Total Retries:    {total_retries}")
+            click.echo(
+                f"  Validation:       {'SUCCESS' if validation_passed else 'FAILED'}"
+            )
+            click.echo("")
+
+            if report.errors:
+                click.echo("Errors:")
+                for err in report.errors:
+                    click.echo(f"  - {err}")
+                click.echo("")
+
+            click.echo("--------------------------------------------------")
+
+        if report.status == AutonomousState.COMPLETED:
+            if not json_output:
+                click.echo("SUCCESS: Autonomous workflow completed successfully.")
+        else:
+            if not json_output:
+                click.echo("FAILED: Autonomous workflow encountered errors.")
+            raise SystemExit(1)
+
+    except SystemExit:
+        raise
+    except Exception as exc:
+        click.echo(f"ERROR: {exc!s}")
+        if not json_output:
+            click.echo("FAILED: Autonomous workflow did not complete.")
+        raise SystemExit(1) from exc
+
+
 if __name__ == "__main__":
     cli()
+
